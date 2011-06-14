@@ -1,3 +1,9 @@
+(prefer-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+
 ;; os x
 (setq mac-option-modifier 'meta)
 
@@ -14,9 +20,6 @@
 
 (add-to-list 'load-path "~/git/emacs/packages/")
 (add-to-list 'load-path "~/git/emacs/packages/color-theme-6.6.0")
-
-;; fonts
-;;(set-default-font "-apple-inconsolata-medium-r-normal--12-*-*-*-*-*-iso10646-1")
 
 ;; common lisp
 (require 'cl)
@@ -213,3 +216,6 @@
   (set-selective-display
    (if selective-display nil (or column 1))))
 (global-set-key [f1] 'jao-toggle-selective-display)
+
+;; revery buffer
+(global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
