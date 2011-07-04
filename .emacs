@@ -62,7 +62,7 @@
 (defalias 'jd 'insert-javascript-doc)
 
 ;; abbrevs always on
-(setq-default abbrev-mode t)
+(setq abbrev-mode t)
 (read-abbrev-file "~/.abbrev_defs")
 (setq save-abbrevs t)
 
@@ -88,16 +88,16 @@
 
  (if (not filename)
 	(message "Buffer '%s' is not visiting a file!" name)
- (progn 	(copy-file filename newname 1) 	(delete-file filename) 	(set-visited-file-name newname) 	(set-buffer-modified-p nil) 	t))))
+ (progn 	(copy-file filename newname 1) 	(delete-file filename) 	(set-visited-file-name newname)		(set-buffer-modified-p nil)		t))))
 
 ;; tabs and spaces
 ;; use tabs
-(setq-default indent-tabs-mode t)
+(setq indent-tabs-mode t)
 ;; tab key goes over 4
 (setq c-basic-offset 4)
 ;; interpret tab to be 4 characters wide, and tab stops 4 wide
-(setq-default tab-width 4)
-(setq-default standard-indent 4)
+(setq tab-width 4)
+(setq standard-indent 4)
 (setq sgml-basic-offset 4)
 
 (defun insert-time ()
@@ -107,7 +107,6 @@
 (defun etnotes ()
   (interactive)
   (find-file "~/Dropbox/et/todo.notes")
-  (end-of-buffer)
 )
 
 (defun todo ()
@@ -143,9 +142,9 @@
   "Deletes all blank lines at the end of the file and leaves single newline character."
   (interactive)
   (save-excursion
-    (goto-char (point-max))
-    (newline)              ;; ensures that there is at least one
-    (delete-blank-lines))) ;; leaves at most one
+	(goto-char (point-max))
+	(newline)			   ;; ensures that there is at least one
+	(delete-blank-lines))) ;; leaves at most one
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'before-save-hook 'delete-trailing-blank-lines)
@@ -157,38 +156,34 @@
 (color-theme-zenburn)
 (eval-after-load 'mumamo
   '(eval-after-load 'zenburn
-     '(ignore-errors (set-face-background
-                      'mumamo-background-chunk-submode1 "#4F3F3F")
-                     (set-face-background
-                      'mumamo-background-chunk-submode2 "#3F4F3F")
-                     (set-face-background
-                      'mumamo-background-chunk-submode3 "#3F3F4F"))))
+	 '(ignore-errors (set-face-background
+					  'mumamo-background-chunk-submode1 "#4F3F3F")
+					 (set-face-background
+					  'mumamo-background-chunk-submode2 "#3F4F3F")
+					 (set-face-background
+					  'mumamo-background-chunk-submode3 "#3F3F4F"))))
 
 (custom-set-variables
-;; custom-set-variables was added by Custom.
-;; If you edit it by hand, you could mess it up, so be careful.
-;; Your init file should contain only one such instance.
-;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(aquamacs-autoface-mode nil)
- '(cursor-type (quote box))
-)
+ '(cursor-type (quote box) t))
 
 ;; custom-set-faces was added by Custom.
 ;; If you edit it by hand, you could mess it up, so be careful.
 ;; Your init file should contain only one such instance.
 ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Menlo"))))
- '(autoface-default ((t (:inherit default))))
- '(emacs-lisp-mode-default ((t (:inherit autoface-default))) t)
 
 ;; html-mode
 (add-hook 'html-mode-hook 'auto-fill-mode nil)
 (setq auto-mode-alist (append '(("\\.html$" . html-mode))
-                       auto-mode-alist))
+					   auto-mode-alist))
 
 ;; org-mode
 (setq auto-mode-alist (append '(("\\.notes$" . org-mode))
-                       auto-mode-alist))
+					   auto-mode-alist))
 (setq org-startup-folded nil )
 
 ;; dos mode
@@ -201,6 +196,13 @@
    (define-key comint-mode-map (kbd "C-p") 'comint-previous-input)
    (define-key comint-mode-map (kbd "C-n") 'comint-next-input)
 ))
+
+;; js
+(setq auto-mode-alist (append '(("\\.json$" . js-mode))
+					   auto-mode-alist))
+(setq javascript-indent-level 4)
+(setq javascript-expr-indent-offset 0)
+(setq javascript-auto-indent-flag nil)
 
 ;; js templating
 (setq auto-mode-alist (cons '("\\.tpl$" . tpl-mode) auto-mode-alist))
@@ -219,3 +221,47 @@
 
 ;; revery buffer
 (global-set-key [f5] '(lambda () (interactive) (revert-buffer nil t nil)))
+
+;; title
+(setq frame-title-format
+	  '(:eval
+		(if buffer-file-name
+			 (concat (file-name-directory buffer-file-name) "%b"))
+		  (buffer-name)
+		  ))
+
+;; scroll while centered
+(defun scroll-up-one-line()
+  (interactive)
+  (scroll-up 1))
+
+(defun scroll-down-one-line()
+  (interactive)
+  (scroll-down 1))
+
+(global-set-key [?\C-.] 'scroll-down-one-line)
+(global-set-key [?\C-,] 'scroll-up-one-line)
+
+(split-window-horizontally)
+
+(setq save-place-file "~/.emacs.d/saveplace")
+(setq save-place t)
+(require 'saveplace)
+
+;; aspx files
+;; (autoload 'aspx-mode "aspx-mode.el" "Edit ASPX files." t)
+;; (setq auto-mode-alist (append '(("\\.aspx$" . aspx-mode))
+;; 					   auto-mode-alist))
+
+;; file names
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+
+;; auto-byte-compile
+(add-hook 'emacs-lisp-mode-hook '(lambda ()
+  (add-hook 'after-save-hook 'emacs-lisp-byte-compile t t))
+)
+
+;; recent files
+(require 'recentf)
+(recentf-mode 1)
