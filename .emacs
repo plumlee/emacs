@@ -14,7 +14,7 @@
 (setq fill-column 72)
 (show-paren-mode 1)
 
-;;(setq cua-auto-tabify-recLOAtangles nil) ;; Don't tabify after rectangle commands
+(setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
 (transient-mark-mode 1) ;; No region when it is not highlighted
 (setq cua-keep-region-after-copy nil)
 (setq mac-pass-command-to-system nil)
@@ -90,16 +90,14 @@
 
 ;; tabs and spaces
 ;; use tabs
-;;(setq indent-tabs-mode t)
-;; tab key goes over 4
-;;(setq-default indent-tabs-mode nil)
-;;(setq-default tab-width 4)
-;;(setq indent-line-function 'insert-tab)
-;;(setq c-basic-offset 4)
-;; interpret tab to be 4 characters wide, and tab stops 4 wide
-;;(setq tab-width 4)
-;;(setq standard-indent 4)
-;;(setq sgml-basic-offset 4)
+(setq indent-tabs-mode t)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq indent-line-function 'insert-tab)
+(setq c-basic-offset 4)
+(setq tab-width 4)
+(setq standard-indent 4)
+(setq sgml-basic-offset 4)
 
 (defun insert-time ()
   (interactive)
@@ -269,7 +267,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defalias 'jm 'js-mode)
+
+(autoload 'js2-mode "js2" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(defalias 'jm 'js2-mode)
 ;; put in js comment structure
 (defun insert-javascript-doc ()
   (interactive)
@@ -283,9 +284,9 @@
   (backward-char )
 )
 
-(setq auto-mode-alist (append '(("\\.json$" . js-mode))
+(setq auto-mode-alist (append '(("\\.json$" . js2-mode))
 					   auto-mode-alist))
-(setq auto-mode-alist (append '(("\\.js$" . js-mode))
+(setq auto-mode-alist (append '(("\\.js$" . js2-mode))
 					   auto-mode-alist))
 (setq javascript-indent-level 4)
 ;; (setq javascript-expr-indent-offset 0)
@@ -312,14 +313,30 @@
 (add-to-list 'ac-sources 'ac-source-yasnippet)
 
 ;; code folding
-(add-hook 'js-mode-hook
+(add-hook 'js2-mode-hook
           (lambda ()
             ;; Scan the file for nested code blocks
             (imenu-add-menubar-index)
             ;; Activate the folding mode
             (hs-minor-mode t)))
 
-
+;; After js2 has parsed a js file, we look for jslint globals decl comment ("/* global Fred, _, Harry */") and
+    ;; add any symbols to a buffer-local var of acceptable global vars
+   (add-hook 'js2-post-parse-callbacks
+          (lambda ()
+            ;; strip newlines etc so the regexp below will match a multiline comment
+            (let ((btext (replace-regexp-in-string "[\n\t ]+" " " (buffer-substring-no-properties 1 (buffer-size)) t t)))
+              (setq js2-additional-externs
+                    (split-string
+                     (if (string-match "/\\* *global \\(.*?\\)\\*/" btext) (match-string-no-properties 1 btext) "")
+                     "[ ,]+" t))
+              )))
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; END JAVASCRIPT MODE
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MAGIT
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "~/git/emacs/packages/magit")
+(require 'magit)
