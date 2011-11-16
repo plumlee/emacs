@@ -32,3 +32,15 @@ href=\('\|"\)"#\('\|"\)
 \,(1+ (/ \# DIVISOR_HERE))
 
 // CSS processing
+// remove single lines
+^\(.*\) ?{ ?\(.*\); ?}$
+\1
+{
+\2
+}
+// now remove multiple decs on one line
+// what else?
+
+// fucking comma first
+^J\(//\)?\([[:space:]]+\), \(.*\)$
+,^J\1\2\3
