@@ -44,3 +44,7 @@ href=\('\|"\)"#\('\|"\)
 // fucking comma first
 ^J\(//\)?\([[:space:]]+\), \(.*\)$
 ,^J\1\2\3
+
+// change function foo(bar, baz) { to foo: function (bar, baz) }
+\(function\) \([^( ]+\) ?(\(.*\)) ?{
+\2: \1 (\3) {
