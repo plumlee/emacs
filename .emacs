@@ -1,3 +1,9 @@
+;; spreading the marmalade
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
 1;; ANNOYING
 (setq visible-bell t)
 
@@ -34,6 +40,7 @@
 (setq cua-keep-region-after-copy nil)
 (setq mac-pass-command-to-system nil)
 
+(setq server-socket-dir (format "/tmp/emacs%d" (user-uid)))
 (server-start)
 
 (add-to-list 'load-path "~/git/emacs/packages/")
@@ -71,9 +78,13 @@
 (defalias 'rename 'rename-file-and-buffer)
 
 ;; abbrevs always on
-(setq abbrev-mode t)
 (read-abbrev-file "~/.abbrev_defs")
+(setq abbrev-mode t)
 (setq save-abbrevs t)
+;; use ; to start abbrevs, so change meaning in syntax table
+(modify-syntax-entry ?; "w")
+(require 'textexpander-sync)
+(textexpander-sync)
 
 ;; steve yegge
 (defun rename-file-and-buffer (new-name)
@@ -147,6 +158,19 @@
   (find-file "~/git/emacs/.emacs")
   )
 
+;; buffer flipping
+(defun transpose-buffers (arg)
+  "Transpose the buffers shown in two windows."
+  (interactive "p")
+  (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
+    (while (/= arg 0)
+      (let ((this-win (window-buffer))
+            (next-win (window-buffer (funcall selector))))
+        (set-window-buffer (selected-window) next-win)
+        (set-window-buffer (funcall selector) this-win)
+        (select-window (funcall selector)))
+      (setq arg (if (plusp arg) (1- arg) (1+ arg))))))
+(global-set-key (kbd "<f7>") 'transpose-buffers)
 
 ;; clear up files before saving them
 (defun delete-trailing-blank-lines ()
@@ -224,13 +248,6 @@
 (autoload 'dos-mode "dos" "Edit Dos scripts." t)
 (add-to-list 'auto-mode-alist '("\\.bat$" . dos-mode))
 
-;; shell
-(add-hook 'comint-mode-hook
-		  (lambda ()
-			(define-key comint-mode-map (kbd "C-p") 'comint-previous-input)
-			(define-key comint-mode-map (kbd "C-n") 'comint-next-input)
-			))
-
 ;; line numbers
 (global-linum-mode t)
 ;;(global-line-number-mode t)
@@ -279,11 +296,17 @@
 (require 'recentf)
 (recentf-mode 1)
 
-(shell)
+;;(shell)
 ;; (add-hook 'after-init-hook #'(lambda ()
 ;;								 (split-window-vertically)
 ;;								 (other-window 1)
 ;;								 (run-scheme "you-are-here")))
+(add-hook 'comint-mode-hook
+		  (lambda ()
+			(define-key comint-mode-map (kbd "C-p") 'comint-previous-input)
+			(define-key comint-mode-map (kbd "C-n") 'comint-next-input)
+			))
+
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
@@ -294,6 +317,7 @@
 
 (defalias 'jm 'js2-mode)
 (defalias 'jd 'insert-javascript-doc)
+(defalias 'jt 'insert-javascript-todo)
 (defalias 'jsdelim 'insert-js-section-delimiter)
 
 ;; put in js comment structure
@@ -308,6 +332,16 @@
   (backward-char )
   )
 
+;; put in js comment structure
+(defun insert-javascript-todo ()
+  (interactive)
+  (insert "\n/**")
+  (insert "\n * TODO ")
+  (insert "\n */")
+  (previous-line 1)
+  (end-of-line)
+  )
+
 ;; put in comment blocks
 (defun insert-js-section-delimiter ()
   (interactive)
@@ -318,6 +352,7 @@
   (previous-line 2)
   (end-of-line)
   )
+
 
 (setq auto-mode-alist (append '(("\\.json$" . js2-mode))
 							  auto-mode-alist))
@@ -366,12 +401,19 @@
 					 (if (string-match "/\\* *global \\(.*?\\)\\*/" btext) (match-string-no-properties 1 btext) "")
 					 "[ ,]+" t))
 			  )))
+
+;; TODO
+;; syntax for doing this in highlighted region
+;; (defun flip-js-function-declaration ()
+;;   (replace-regexp-in-string "\(function\) \([^( ]+\) ?(\(.*\)) ?{" "\2: \1 (\3) {")
+;; )
+
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; END JAVASCRIPT MODE
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MAGIT
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'load-path "~/git/emacs/packages/magit")
 (require 'magit)
