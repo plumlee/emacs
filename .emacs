@@ -1,11 +1,30 @@
+;; use ; to start abbrevs, so change meaning in syntax table
+(modify-syntax-entry ?; "w")
+
+;; keep what's on disk in the buffers
+;; should prevent bad habits too
+(global-auto-revert-mode t)
+
 ;; spreading the marmalade
+(if (not (getenv "TERM_PROGRAM"))
+       (setenv "PATH"
+               (shell-command-to-string "source $HOME/.bashrc && printf $PATH")))
+(add-to-list 'exec-path "~/usr/local/bin")
+
 (require 'package)
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
 
+;; change frames
+(global-set-key "\M-`" 'other-frame)
+
 1;; ANNOYING
 (setq visible-bell t)
+
+;; desktop mode
+(desktop-save-mode 1)
+(setq desktop-path '("~/Dropbox/emacs"))
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 (prefer-coding-system 'utf-8)
@@ -28,17 +47,19 @@
 
 ;; os x
 (setq mac-command-modifier 'ctrl)
+(setq mac-pass-command-to-system nil)
 (setq mac-option-modifier 'meta)
 
 (cua-mode 0)
-(auto-fill-mode 0)
-(setq fill-column 72)
+(auto-fill-mode -1)
+;;(setq fill-column 100)
 (show-paren-mode 1)
 
-(setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+;; Don't tabify after rectangle commands
+;; (setq cua-auto-tabify-rectangles nil)
 (transient-mark-mode 1) ;; No region when it is not highlighted
-(setq cua-keep-region-after-copy nil)
-(setq mac-pass-command-to-system nil)
+(setq cua-keep-region-after-copy t)
+
 
 (setq server-socket-dir (format "/tmp/emacs%d" (user-uid)))
 (server-start)
@@ -73,7 +94,6 @@
 (defalias 'gl 'goto-line)
 (defalias 'rr 'replace-regexp)
 (defalias 'hm 'html-mode)
-(defalias 'cm 'css-mode)
 (defalias 'fold 'jao-toggle-selective-display)
 (defalias 'rename 'rename-file-and-buffer)
 
@@ -81,10 +101,9 @@
 (read-abbrev-file "~/.abbrev_defs")
 (setq abbrev-mode t)
 (setq save-abbrevs t)
-;; use ; to start abbrevs, so change meaning in syntax table
-(modify-syntax-entry ?; "w")
+
 (require 'textexpander-sync)
-(textexpander-sync)
+;;(textexpander-sync)
 
 ;; steve yegge
 (defun rename-file-and-buffer (new-name)
@@ -113,7 +132,7 @@
 ;; tabs and spaces
 ;; use tabs
 (setq indent-tabs-mode t)
-(setq-default indent-tabs-mode nil)
+(setq-default indent-tabs-mode t)
 (setq-default tab-width 4)
 (setq indent-line-function 'insert-tab)
 (setq c-basic-offset 4)
@@ -198,25 +217,25 @@
 (global-set-key (kbd "<f11>") 'hs-show-all)
 
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IBUFFER
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'ibuffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer-other-window)
 (setq ibuffer-default-sorting-mode 'major-mode)
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MUSTACHE
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'mustache-mode)
 ;; js templating
 (setq auto-mode-alist (cons '("\\.tpl$" . tpl-mode) auto-mode-alist))
 (autoload 'tpl-mode "tpl-mode" "Major mode for editing CTemplate files." t)
 (add-hook 'tpl-mode-hook '(lambda () (font-lock-mode 1)))
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COLOR THEMES
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'load-path "~/git/emacs/packages/color-theme-6.6.0")
 (add-to-list 'load-path "~/git/emacs-color-theme-solarized")
 (load "color-theme-6.6.0/color-theme.el")
@@ -241,15 +260,18 @@
 ;; markdown
 (autoload 'markdown-mode "markdown-mode.el"
   "Major mode for editing Markdown files" t)
-(setq auto-mode-alist
-	  (cons '("\\.text" . markdown-mode) auto-mode-alist))
+(add-to-list 'auto-mode-alist '("\\.text$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
 
 ;; dos mode
 (autoload 'dos-mode "dos" "Edit Dos scripts." t)
 (add-to-list 'auto-mode-alist '("\\.bat$" . dos-mode))
 
 ;; line numbers
-(global-linum-mode t)
+(add-hook 'org-mode-hook
+		  (lambda ()
+			(linum-mode t))
+		  t)
 ;;(global-line-number-mode t)
 
 ;; title
@@ -295,8 +317,12 @@
 ;; recent files
 (require 'recentf)
 (recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
-;;(shell)
+(setq special-display-buffer-names
+           '("shell"))
+(shell)
 ;; (add-hook 'after-init-hook #'(lambda ()
 ;;								 (split-window-vertically)
 ;;								 (other-window 1)
@@ -308,12 +334,14 @@
 			))
 
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (autoload 'js2-mode "js2" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js$" . abbrev-mode))
+(add-hook 'js2-mode-hook '(lambda () (auto-fill-mode nil)))
 
 (defalias 'jm 'js2-mode)
 (defalias 'jd 'insert-javascript-doc)
@@ -390,22 +418,31 @@
 			;; Activate the folding mode
 			(hs-minor-mode t)))
 
+;; add predefined values to jslint
+(setq js2-global-externs (split-string "Buffer, clearInterval, clearTimeout, console, exports, global, module, process, querystring, require, setInterval, setTimeout, __filename, __dirname" "[ ,]+" t))
+
+;; http://www.emacswiki.org/emacs/Js2Mode
 ;; After js2 has parsed a js file, we look for jslint globals decl comment ("/* global Fred, _, Harry */") and
-;; add any symbols to a buffer-local var of acceptable global vars
+    ;; add any symbols to a buffer-local var of acceptable global vars
+    ;; Note that we also support the "symbol: true" way of specifying names via a hack (remove any ":true"
+    ;; to make it look like a plain decl, and any ':false' are left behind so they'll effectively be ignored as
+    ;; you can;t have a symbol called "someName:false"
 (add-hook 'js2-post-parse-callbacks
-		  (lambda ()
-			;; strip newlines etc so the regexp below will match a multiline comment
-			(let ((btext (replace-regexp-in-string "[\n\t ]+" " " (buffer-substring-no-properties 1 (buffer-size)) t t)))
-			  (setq js2-additional-externs
-					(split-string
-					 (if (string-match "/\\* *global \\(.*?\\)\\*/" btext) (match-string-no-properties 1 btext) "")
-					 "[ ,]+" t))
-			  )))
+          (lambda ()
+            (let ((btext (replace-regexp-in-string
+                          ": *true" " "
+                          (replace-regexp-in-string "[\n\t ]+" " " (buffer-substring-no-properties 1 (buffer-size)) t t))))
+              (setq js2-additional-externs
+                    (split-string
+                     (if (string-match "/\\* *global *\\(.*?\\) *\\*/" btext) (match-string-no-properties 1 btext) "")
+                     " *, *" t))
+              )))
 
 ;; TODO
 ;; syntax for doing this in highlighted region
 ;; (defun flip-js-function-declaration ()
-;;   (replace-regexp-in-string "\(function\) \([^( ]+\) ?(\(.*\)) ?{" "\2: \1 (\3) {")
+;;   (string-match "^\(?:[ ]+\)?\(function\) \([^( ]+\) ?(\(.*\)) ?{"
+;;   (replace-regexp-in-string  "\2: \1 (\3) {")
 ;; )
 
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -417,3 +454,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'load-path "~/git/emacs/packages/magit")
 (require 'magit)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CSS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'flymake-csslint)
+(add-hook 'css-mode-hook 'flymake-mode)
+(setq flymake-gui-warnings-enabled nil)
+(put 'upcase-region 'disabled nil)
