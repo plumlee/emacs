@@ -19,7 +19,7 @@
 ;; change frames
 (global-set-key "\M-`" 'other-frame)
 
-1;; ANNOYING
+;; ANNOYING
 (setq visible-bell t)
 
 ;; desktop mode
@@ -57,7 +57,8 @@
 
 ;; Don't tabify after rectangle commands
 ;; (setq cua-auto-tabify-rectangles nil)
-(transient-mark-mode 1) ;; No region when it is not highlighted
+(transient-mark-mode 1)
+;; No region when it is not highlighted
 (setq cua-keep-region-after-copy t)
 
 
@@ -83,7 +84,7 @@
 ;; ;; die scrollbar
 ;;(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+;; (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
 ;; ;; aliases
 (defalias 'qrr 'query-replace-regexp)
@@ -178,17 +179,24 @@
   )
 
 ;; buffer flipping
-(defun transpose-buffers (arg)
-  "Transpose the buffers shown in two windows."
-  (interactive "p")
-  (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
-    (while (/= arg 0)
-      (let ((this-win (window-buffer))
-            (next-win (window-buffer (funcall selector))))
-        (set-window-buffer (selected-window) next-win)
-        (set-window-buffer (funcall selector) this-win)
-        (select-window (funcall selector)))
-      (setq arg (if (plusp arg) (1- arg) (1+ arg))))))
+;; http://steve.yegge.googlepages.com/my-dot-emacs-file
+(defun transpose-windows ()
+ "If you have 2 windows, it swaps them."
+ (interactive)
+ (cond ((not (= (count-windows) 2))
+        (message "You need exactly 2 windows to do this."))
+       (t
+        (let* ((w1 (first (window-list)))
+               (w2 (second (window-list)))
+               (b1 (window-buffer w1))
+               (b2 (window-buffer w2))
+               (s1 (window-start w1))
+               (s2 (window-start w2)))
+          (set-window-buffer w1 b2)
+          (set-window-buffer w2 b1)
+          (set-window-start w1 s2)
+          (set-window-start w2 s1)
+          (other-window 1)))))
 (global-set-key (kbd "<f7>") 'transpose-buffers)
 
 ;; clear up files before saving them
@@ -207,7 +215,7 @@
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'before-save-hook 'delete-trailing-blank-lines)
-;;	(add-hook 'before-save-hook 'indent-whole-buffer)
+;;(add-hook 'before-save-hook 'tabify)
 
 ;; code folding
 ;; Show-hide
@@ -310,9 +318,9 @@
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 
 ;; auto-byte-compile
-(add-hook 'emacs-lisp-mode-hook '(lambda ()
-								   (add-hook 'after-save-hook 'emacs-lisp-byte-compile t t))
-		  )
+;; (add-hook 'emacs-lisp-mode-hook '(lambda ()
+;; 								   (add-hook 'after-save-hook 'emacs-lisp-byte-compile t t))
+;; 		  )
 
 ;; recent files
 (require 'recentf)
@@ -338,12 +346,14 @@
 ;; JAVASCRIPT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(autoload 'js2-mode "js2" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'load-path "~/git/emacs/packages/js3-mode")
+(autoload 'js3-mode "js3" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 (add-to-list 'auto-mode-alist '("\\.js$" . abbrev-mode))
-(add-hook 'js2-mode-hook '(lambda () (auto-fill-mode nil)))
+(add-hook 'js3-mode-hook '(lambda () (auto-fill-mode nil)))
+(add-hook 'js3-mode-hook '(lambda () (auto-fill-mode nil)))
 
-(defalias 'jm 'js2-mode)
+(defalias 'jm 'js3-mode)
 (defalias 'jd 'insert-javascript-doc)
 (defalias 'jt 'insert-javascript-todo)
 (defalias 'jsdelim 'insert-js-section-delimiter)
@@ -382,9 +392,9 @@
   )
 
 
-(setq auto-mode-alist (append '(("\\.json$" . js2-mode))
+(setq auto-mode-alist (append '(("\\.json$" . js3-mode))
 							  auto-mode-alist))
-(setq auto-mode-alist (append '(("\\.js$" . js2-mode))
+(setq auto-mode-alist (append '(("\\.js$" . js3-mode))
 							  auto-mode-alist))
 (setq javascript-indent-level 4)
 ;; (setq javascript-expr-indent-offset 0)
@@ -411,7 +421,7 @@
 (add-to-list 'ac-sources 'ac-source-yasnippet)
 
 ;; code folding
-(add-hook 'js2-mode-hook
+(add-hook 'js3-mode-hook
 		  (lambda ()
 			;; Scan the file for nested code blocks
 			(imenu-add-menubar-index)
@@ -419,7 +429,7 @@
 			(hs-minor-mode t)))
 
 ;; add predefined values to jslint
-(setq js2-global-externs (split-string "Buffer, clearInterval, clearTimeout, console, exports, global, module, process, querystring, require, setInterval, setTimeout, __filename, __dirname" "[ ,]+" t))
+(setq js3-global-externs (split-string "Buffer, clearInterval, clearTimeout, console, exports, global, module, process, querystring, require, setInterval, setTimeout, __filename, __dirname" "[ ,]+" t))
 
 ;; http://www.emacswiki.org/emacs/Js2Mode
 ;; After js2 has parsed a js file, we look for jslint globals decl comment ("/* global Fred, _, Harry */") and
@@ -427,12 +437,12 @@
     ;; Note that we also support the "symbol: true" way of specifying names via a hack (remove any ":true"
     ;; to make it look like a plain decl, and any ':false' are left behind so they'll effectively be ignored as
     ;; you can;t have a symbol called "someName:false"
-(add-hook 'js2-post-parse-callbacks
+(add-hook 'js3-post-parse-callbacks
           (lambda ()
             (let ((btext (replace-regexp-in-string
                           ": *true" " "
                           (replace-regexp-in-string "[\n\t ]+" " " (buffer-substring-no-properties 1 (buffer-size)) t t))))
-              (setq js2-additional-externs
+              (setq js3-additional-externs
                     (split-string
                      (if (string-match "/\\* *global *\\(.*?\\) *\\*/" btext) (match-string-no-properties 1 btext) "")
                      " *, *" t))
@@ -458,7 +468,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CSS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'flymake-csslint)
-(add-hook 'css-mode-hook 'flymake-mode)
-(setq flymake-gui-warnings-enabled nil)
-(put 'upcase-region 'disabled nil)
+;; (require 'flymake-csslint)
+;; (add-hook 'css-mode-hook 'flymake-mode)
+;; (setq flymake-gui-warnings-enabled nil)
+;; (put 'upcase-region 'disabled nil)
+;; (put 'downcase-region 'disabled nil)
+
+(setq custom-file "~/.emacs-custom.el")
+(load custom-file)

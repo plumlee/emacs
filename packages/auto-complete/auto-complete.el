@@ -167,7 +167,7 @@
     scheme-mode
     ocaml-mode tuareg-mode
     perl-mode cperl-mode python-mode ruby-mode
-    ecmascript-mode javascript-mode js-mode js2-mode php-mode css-mode
+    ecmascript-mode javascript-mode js-mode js3-mode php-mode css-mode
     makefile-mode sh-mode fortran-mode f90-mode ada-mode
     xml-mode sgml-mode)
   "Major modes `auto-complete-mode' can run on."
@@ -845,7 +845,7 @@ You can not use it in source definition like (prefix . `NAME')."
                 (setq point nil))
             (if point
                 (setq prefix-def prefix))))
-        
+
         if (equal prefix prefix-def) do (push source sources)
 
         finally return
@@ -1328,7 +1328,7 @@ that have been made before in this function."
       (ac-complete)
     (when (and (ac-inline-live-p)
                ac-common-part)
-      (ac-inline-hide) 
+      (ac-inline-hide)
       (ac-expand-string ac-common-part (eq last-command this-command))
       (setq ac-common-part nil)
       t)))
