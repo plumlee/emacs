@@ -1,8 +1,13 @@
+(setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
+
+(cua-mode 0)
+(show-paren-mode t)
+
 ;; use ; to start abbrevs, so change meaning in syntax table
 (setq server-socket-dir (format "/tmp/emacs%d" (user-uid)))
 (server-start)
 
-(global-auto-revert-mode 1)
+(global-auto-revert-mode t)
 
 (modify-syntax-entry ?; "w")
 
@@ -19,17 +24,13 @@
       '(
     "/usr/local/bin"
     "/usr/bin"
+    "/bin"
     ))
 
 ;; various tools and pieces
 ;; keep backup files in one place
-(setq backup-directory-alist
-          `((".*" . ,temporary-file-directory)))
-    (setq auto-save-file-name-transforms
-          `((".*" ,temporary-file-directory t)))
-
-(setq backup-directory-alist (quote ((".*" . "~/backups/"))))
-(setq auto-save-file-name-transforms `((".*" ,"~/backups/" t)))
+(setq backup-directory-alist (quote ((".*" . "~/backups/" ))))
+(setq auto-save-file-name-transforms `((".*", "~/backups/" t)))
 
 ;; another way for M-x
 (global-set-key "\C-x\C-m" 'execute-extended-command)
@@ -70,6 +71,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flymake mode
 (eval-after-load 'flymake '(require 'flymake-cursor))
+;; turns off flymake for html/xml files
+(defun flymake-xml-init ())
 
 ;; desktop mode
 (desktop-save-mode 1)
@@ -144,8 +147,7 @@
 (autoload 'js3-mode "js3" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 (add-hook 'js3-mode-hook
-     (lambda () (flymake-mode t))
-     (lambda () (show-parens-mode t)))
+     (lambda () (flymake-mode t)))
 
 ;; no tabs anymore
 (defun js3-mode-untabify ()
@@ -158,10 +160,10 @@
           (untabify (1- (point)) (point-max))))
     nil)
 
-  (add-hook 'js3-mode-hook 
-            '(lambda ()
-               (make-local-variable 'write-contents-hooks)
-               (add-hook 'write-contents-hooks 'js3-mode-untabify)))
+  ;; (add-hook 'js3-mode-hook 
+  ;;           '(lambda ()
+  ;;              (make-local-variable 'write-contents-hooks)
+  ;;              (add-hook 'write-contents-hooks 'js3-mode-untabify)))
 
 (add-to-list 'load-path "/usr/local/lib/node_modules/jshint-mode")
 (require 'flymake-jshint)
