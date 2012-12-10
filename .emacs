@@ -19,11 +19,11 @@
 (setq mac-option-modifier 'meta)
 
 ;; environment
-(setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
+(setenv "PATH" (concat "~/git/homebrew/bin:" (getenv "PATH")))
 (setenv "NODE_PATH" "/usr/local/bin/node_modules")
 (setq exec-path
       '(
-    "/usr/local/bin"
+    "~/git/homebrew/bin"
     "/usr/bin"
     "/bin"
     ))
@@ -32,6 +32,9 @@
 ;; keep backup files in one place
 (setq backup-directory-alist (quote ((".*" . "~/backups/" ))))
 (setq auto-save-file-name-transforms `((".*", "~/backups/" t)))
+
+;; got used to this in terminal
+(global-set-key (kbd "C--") 'undo)
 
 ;; another way for M-x
 (global-set-key "\C-x\C-m" 'execute-extended-command)
@@ -66,6 +69,17 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 	  	  	       
 (prefer-coding-system 'utf-8)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; shell
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq special-display-buffer-names
+      '("*shell*"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; undo
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'undo-tree)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
@@ -140,6 +154,23 @@
   (insert "\n")
   )
 
+(defun codereview ()
+  (interactive)
+  (find-file "~/Dropbox/et/codereviews.txt")
+  )
+
+(defun scrach ()
+  (interactive)
+  (find-file "~/Dropbox/scrach")
+  (insert "\n")
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; THEMES
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "~/git/solarized-emacs/")
+(add-to-list 'custom-theme-load-path "~/git/solarized-emacs/")
+(load-theme 'solarized-dark t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
@@ -167,7 +198,8 @@
 ;;              (make-local-variable 'write-contents-hooks)
 ;;              (add-hook 'write-contents-hooks 'js3-mode-untabify)))
 
-(add-to-list 'load-path "/usr/local/lib/node_modules/jshint-mode")
+(add-to-list 'load-path "/usr/local/share/npm/lib/node_modules/jshint-mode")
+;; (add-to-list 'load-path "/usr/local/lib/node_modules/jshint-mode")
 (require 'flymake-jshint)
 ;;(add-hook 'javascript-mode-hook
 ;;    (lambda () (flymake-mode t)))
@@ -189,6 +221,7 @@
  '(js3-curly-indent-offset 2)
  '(js3-max-columns 80)
  '(js3-mirror-mode t)
+ '(js3-mode-escape-quotes nil)
 )
 
 (custom-set-faces
