@@ -178,9 +178,12 @@
 (add-to-list 'load-path "~/git/emacs/packages/js3-mode")
 (autoload 'js3-mode "js3" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
+<<<<<<< HEAD
 ;;(add-hook 'js3-mode-hook
 ;;     (lambda () (flymake-mode t)))
 
+(add-hook 'js3-mode-hook
+     (lambda () (flymake-mode t)))
 
 ;; no tabs anymore
 (defun js3-mode-untabify ()
@@ -193,10 +196,10 @@
           (untabify (1- (point)) (point-max))))
     nil)
 
-;; (add-hook 'js3-mode-hook 
-;;           '(lambda ()
-;;              (make-local-variable 'write-contents-hooks)
-;;              (add-hook 'write-contents-hooks 'js3-mode-untabify)))
+  ;; (add-hook 'js3-mode-hook 
+  ;;           '(lambda ()
+  ;;              (make-local-variable 'write-contents-hooks)
+  ;;              (add-hook 'write-contents-hooks 'js3-mode-untabify)))
 
 (add-to-list 'load-path "/usr/local/share/npm/lib/node_modules/jshint-mode")
 ;; (add-to-list 'load-path "/usr/local/lib/node_modules/jshint-mode")
