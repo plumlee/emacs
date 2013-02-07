@@ -1,6 +1,12 @@
 (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 
+(setq-default indent-tabs-mode t)
+(setq default-tab-width 4)
+(setq tab-stop-list (number-sequence 4 200 4))
+(setq indent-line-function 'insert-tab)
+
 (cua-mode 0)
+
 (show-paren-mode t)
 
 ;; use ; to start abbrevs, so change meaning in syntax table
@@ -22,11 +28,11 @@
 (setenv "PATH" (concat "~/git/homebrew/bin:" (getenv "PATH")))
 (setenv "NODE_PATH" "/usr/local/bin/node_modules")
 (setq exec-path
-      '(
-    "~/git/homebrew/bin"
-    "/usr/bin"
-    "/bin"
-    ))
+	  '(
+	"~/git/homebrew/bin"
+	"/usr/bin"
+	"/bin"
+	))
 
 ;; various tools and pieces
 ;; keep backup files in one place
@@ -65,16 +71,16 @@
 ;; keep what's on disk in the buffers
 ;; should prevent bad habits too
 (global-auto-revert-mode t)
-			 			 
+						 
 (defalias 'yes-or-no-p 'y-or-n-p)
-	  	  	       
+				   
 (prefer-coding-system 'utf-8)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; shell
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq special-display-buffer-names
-      '("*shell*"))
+	  '("*shell*"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; undo
@@ -107,7 +113,7 @@
 
 (require 'package)
 (add-to-list 'package-archives 
-	     '("marmalade" . "http://marmalade-repo.org/packages/")
+		 '("marmalade" . "http://marmalade-repo.org/packages/")
 )
 
 ;; (require 'textexpander-sync)
@@ -125,7 +131,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		      
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;			  
 (defun insert-time ()
   (interactive)
   (insert (format-time-string "%Y-%m-%d-%R"))
@@ -175,37 +181,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'load-path "~/git/emacs/packages/js3-mode")
+(add-to-list 'load-path "~/git/js3-mode")
 (autoload 'js3-mode "js3" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
-<<<<<<< HEAD
-;;(add-hook 'js3-mode-hook
-;;     (lambda () (flymake-mode t)))
 
 (add-hook 'js3-mode-hook
-     (lambda () (flymake-mode t)))
+	 (lambda () (flymake-mode t)))
 
-;; no tabs anymore
-(defun js3-mode-untabify ()
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "[ \t]+$" nil t)
-        (delete-region (match-beginning 0) (match-end 0)))
-      (goto-char (point-min))
-      (if (search-forward "\t" nil t)
-          (untabify (1- (point)) (point-max))))
-    nil)
 
-  ;; (add-hook 'js3-mode-hook 
-  ;;           '(lambda ()
-  ;;              (make-local-variable 'write-contents-hooks)
-  ;;              (add-hook 'write-contents-hooks 'js3-mode-untabify)))
+(defun js3-mode-tabify ()
+	   (save-excursion
+		 (goto-char (point-min))
+		 (while (re-search-forward "[ \t]+$" nil t)
+		   (delete-region (match-beginning 0) (match-end 0)))
+		 (goto-char (point-min))
+		 (if (search-forward "\t" nil t)
+			 (tabify (1- (point)) (point-max))))
+	   nil)
+
+(add-hook 'js3-mode-hook 
+	  '(lambda ()
+		 (make-local-variable 'write-contents-hooks)
+		 (add-hook 'write-contents-hooks 'js3-mode-tabify)))
 
 (add-to-list 'load-path "/usr/local/share/npm/lib/node_modules/jshint-mode")
-;; (add-to-list 'load-path "/usr/local/lib/node_modules/jshint-mode")
+
 (require 'flymake-jshint)
 ;;(add-hook 'javascript-mode-hook
-;;    (lambda () (flymake-mode t)))
+;;	  (lambda () (flymake-mode t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM
@@ -215,16 +218,18 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(js3-auto-indent-p t)         ; it's nice for commas to right themselves.
- '(js3-enter-indents-newline t) ; don't need to push tab before typing
- '(js3-indent-on-enter-key t)   ; fix indenting before moving on
- '(js3-expr-indent-offset 2)
- '(js3-paren-indent-offset 2)
- '(js3-square-indent-offset 2)
- '(js3-curly-indent-offset 2)
- '(js3-max-columns 80)
- '(js3-mirror-mode t)
- '(js3-mode-escape-quotes nil)
+	'(js3-auto-indent-p t)			; it's nice for commas to right themselves.
+	'(js3-enter-indents-newline t) ; don't need to push tab before typing
+	'(js3-indent-on-enter-key t)	; fix indenting before moving on
+	'(js3-indent-dots t)
+	'(js3-indent-tabs-mode t)
+	'(js3-expr-indent-offset t)
+	'(js3-paren-indent-offset 0)
+	'(js3-square-indent-offset 0)
+	'(js3-curly-indent-offset 0)
+	'(js3-max-columns 80)
+	'(js3-mirror-mode t)
+	'(js3-mode-escape-quotes nil)
 )
 
 (custom-set-faces
