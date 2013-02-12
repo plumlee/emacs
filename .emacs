@@ -25,15 +25,15 @@
 (setq mac-option-modifier 'meta)
 
 ;; environment
-(setenv "PATH" (getenv "PATH"))
-(setenv "NODE_PATH" (getenv "NODE_PATH"))
+(setenv "PATH" (concat "~/git/homebrew/share/npm/bin/:" "~/git/homebrew/share/npm/lib/:" (getenv "PATH")))
+(setenv "NODE_PATH" (concat (getenv "NODE_PATH")))
 (setq exec-path
 	  '(
-	"~/git/homebrew/bin"
-	"~/git/homebrew/share/npm/lib/node_modules"
-	"~/git/homebrew/share/npm/bin/node_modules"
-	"/usr/bin"
-	"/bin"
+	"~/git/homebrew/bin" ":"
+	"~/git/homebrew/share/npm/lib/node_modules" ":"
+	"~/git/homebrew/share/npm/bin/node_modules" ":"
+	"/usr/bin" ":"
+	"/bin" ":"
 	))
 
 ;; various tools and pieces
@@ -93,17 +93,9 @@
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flymake mode
-;; https://github.com/illusori/emacs-flymake
-;; (add-to-list 'load-path "~/git/emacs-flymake")
 (require 'flymake);
-;; https://github.com/illusori/emacs-flymake-cursor
-;; (add-to-list 'load-path "~/git/emacs-flymake-cursor")
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 (eval-after-load 'flymake '(require 'flymake-cursor))
-;; (setq flymake-max-parallel-syntax-checks 8)
-;; (setq flymake-run-in-place nil)
-;; (setq temporary-file-directory "/tmp")
-;; (setq flymake-number-of-errors-to-display 4)
 
 ;; desktop mode
 (desktop-save-mode 1)
@@ -243,11 +235,6 @@
 	'(js3-max-columns 80)
 	'(js3-mirror-mode t)
 	'(js3-mode-escape-quotes nil)
-	;; let jshint do this instead, js3 can't parse /*global foo:true */
-	'(js3-highlight-external-variables nil)
-
-;; jshint
-	'(jshint-mode-jshintrc "~/.jshintrc")
 )
 
 (custom-set-faces
