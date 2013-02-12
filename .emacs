@@ -25,11 +25,13 @@
 (setq mac-option-modifier 'meta)
 
 ;; environment
-(setenv "PATH" (concat "~/git/homebrew/bin:" (getenv "PATH")))
-(setenv "NODE_PATH" "/usr/local/bin/node_modules")
+(setenv "PATH" (getenv "PATH"))
+(setenv "NODE_PATH" (getenv "NODE_PATH"))
 (setq exec-path
 	  '(
 	"~/git/homebrew/bin"
+	"~/git/homebrew/share/npm/lib/node_modules"
+	"~/git/homebrew/share/npm/bin/node_modules"
 	"/usr/bin"
 	"/bin"
 	))
@@ -71,9 +73,9 @@
 ;; keep what's on disk in the buffers
 ;; should prevent bad habits too
 (global-auto-revert-mode t)
-						 
+
 (defalias 'yes-or-no-p 'y-or-n-p)
-				   
+
 (prefer-coding-system 'utf-8)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -91,9 +93,17 @@
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flymake mode
+;; https://github.com/illusori/emacs-flymake
+;; (add-to-list 'load-path "~/git/emacs-flymake")
+(require 'flymake);
+;; https://github.com/illusori/emacs-flymake-cursor
+;; (add-to-list 'load-path "~/git/emacs-flymake-cursor")
+(add-hook 'find-file-hook 'flymake-find-file-hook)
 (eval-after-load 'flymake '(require 'flymake-cursor))
-;; turns off flymake for html/xml files
-(defun flymake-xml-init ())
+;; (setq flymake-max-parallel-syntax-checks 8)
+;; (setq flymake-run-in-place nil)
+;; (setq temporary-file-directory "/tmp")
+;; (setq flymake-number-of-errors-to-display 4)
 
 ;; desktop mode
 (desktop-save-mode 1)
@@ -112,7 +122,7 @@
 (setq uniquify-buffer-name-style 'post-forward)
 
 (require 'package)
-(add-to-list 'package-archives 
+(add-to-list 'package-archives
 		 '("marmalade" . "http://marmalade-repo.org/packages/")
 )
 
@@ -120,8 +130,8 @@
 ;; (textexpander-sync)
 
 (require 'saveplace)
-(setq save-place-file "~/.emacs.d/saveplace")
-(setq save-place t)
+(setq-default save-place t)
+(setq save-place-file "~/.saveplace")
 
 ;; recent files
 (require 'recentf)
@@ -131,13 +141,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;			  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun insert-time ()
   (interactive)
   (insert (format-time-string "%Y-%m-%d-%R"))
   )
 
-(defun etnotes ()
+(defun etdo ()
   (interactive)
   (find-file "~/Dropbox/et/todo.notes")
   )
@@ -181,12 +191,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; node and npm installed via homebrew
+;; so they use this location for global items
+(add-to-list 'load-path "~/git/jshint-mode")
+(require 'flymake-jshint)
+(add-hook 'js3-mode-hook
+		  (lambda () (flymake-mode t))
+)
+
 (add-to-list 'load-path "~/git/js3-mode")
 (autoload 'js3-mode "js3" nil t)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
-
-(add-hook 'js3-mode-hook
-	 (lambda () (flymake-mode t)))
+(add-to-list 'auto-mode-alist '("\\.json$" . js3-mode))
 
 
 (defun js3-mode-tabify ()
@@ -199,16 +215,10 @@
 			 (tabify (1- (point)) (point-max))))
 	   nil)
 
-(add-hook 'js3-mode-hook 
+(add-hook 'js3-mode-hook
 	  '(lambda ()
 		 (make-local-variable 'write-contents-hooks)
 		 (add-hook 'write-contents-hooks 'js3-mode-tabify)))
-
-(add-to-list 'load-path "/usr/local/share/npm/lib/node_modules/jshint-mode")
-
-(require 'flymake-jshint)
-;;(add-hook 'javascript-mode-hook
-;;	  (lambda () (flymake-mode t)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM
@@ -216,13 +226,16 @@
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
+ ;; Your init file should contain only one such instance.b
  ;; If there is more than one, they won't work right.
+
+ ;; js3
 	'(js3-auto-indent-p t)			; it's nice for commas to right themselves.
 	'(js3-enter-indents-newline t) ; don't need to push tab before typing
 	'(js3-indent-on-enter-key t)	; fix indenting before moving on
 	'(js3-indent-dots t)
 	'(js3-indent-tabs-mode t)
+	'(js3-indent-level 4)
 	'(js3-expr-indent-offset t)
 	'(js3-paren-indent-offset 0)
 	'(js3-square-indent-offset 0)
@@ -230,6 +243,11 @@
 	'(js3-max-columns 80)
 	'(js3-mirror-mode t)
 	'(js3-mode-escape-quotes nil)
+	;; let jshint do this instead, js3 can't parse /*global foo:true */
+	'(js3-highlight-external-variables nil)
+
+;; jshint
+	'(jshint-mode-jshintrc "~/.jshintrc")
 )
 
 (custom-set-faces
@@ -238,4 +256,3 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
