@@ -25,15 +25,13 @@
 (setq mac-option-modifier 'meta)
 
 ;; environment
-(setenv "PATH" (concat "~/git/homebrew/share/npm/bin/:" "~/git/homebrew/share/npm/lib/:" (getenv "PATH")))
-(setenv "NODE_PATH" (concat (getenv "NODE_PATH")))
+;; must have paths to jshint and node for emacs-flymake
+(setenv "PATH" (concat "~/git/homebrew/bin:" "~/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "~/git/homebrew/share/npm/bin:" (getenv "PATH")))
+(setenv "NODE_PATH" (concat "~/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
 (setq exec-path
 	  '(
 	"~/git/homebrew/bin" ":"
-	"~/git/homebrew/share/npm/lib/node_modules" ":"
-	"~/git/homebrew/share/npm/bin/node_modules" ":"
-	"/usr/bin" ":"
-	"/bin" ":"
+	"~/git/homebrew/share/npm/bin/" ":"
 	))
 
 ;; various tools and pieces
@@ -93,9 +91,18 @@
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flymake mode
+;; 
+(add-to-list 'load-path "~/git/emacs-flymake/")
 (require 'flymake);
-(add-hook 'find-file-hook 'flymake-find-file-hook)
+;; (setq flymake-log-level 3)
+;; https://github.com/illusori/emacs-flymake
+(add-to-list 'load-path "~/git/emacs-flymake-cursor/")
+;; (add-hook 'find-file-hook 'flymake-find-file-hook)
+;; https://github.com/illusori/emacs-flymake-cursor
 (eval-after-load 'flymake '(require 'flymake-cursor))
+(setq flymake-max-parallel-syntax-checks 8)
+(setq flymake-run-in-place nil)
+(setq temporary-file-directory "/tmp")
 
 ;; desktop mode
 (desktop-save-mode 1)
@@ -185,17 +192,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; node and npm installed via homebrew
 ;; so they use this location for global items
-(add-to-list 'load-path "~/git/jshint-mode")
-(require 'flymake-jshint)
-(add-hook 'js3-mode-hook
-		  (lambda () (flymake-mode t))
-)
+;; (add-to-list 'load-path "~/git/jshint-mode")
+;; (require 'flymake-jshint)
 
 (add-to-list 'load-path "~/git/js3-mode")
 (autoload 'js3-mode "js3" nil t)
+(add-hook 'js3-mode-hook (lambda () (flymake-mode t)))
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 (add-to-list 'auto-mode-alist '("\\.json$" . js3-mode))
-
 
 (defun js3-mode-tabify ()
 	   (save-excursion
@@ -243,3 +247,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
