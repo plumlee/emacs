@@ -7,6 +7,14 @@
 
 (cua-mode 0)
 
+(add-to-list 'load-path "/Users/splumlee/git/emacs/packages")
+(require 'markdown-mode);
+
+;; (add-to-list 'load-path "/Users/splumlee/git/smartparens")
+;; (add-to-list 'load-path "/Users/splumlee/git/dash.el")
+;; (require 'smartparens);
+;; (smartparens-global-mode 1)
+
 (show-paren-mode t)
 
 ;; use ; to start abbrevs, so change meaning in syntax table
@@ -17,7 +25,7 @@
 
 (modify-syntax-entry ?; "w")
 
-(add-to-list 'load-path "~/git/emacs/packages/")
+(add-to-list 'load-path "/Users/splumlee/git/emacs/packages/")
 
 ;; os x
 (setq mac-command-modifier 'ctrl)
@@ -26,18 +34,18 @@
 
 ;; environment
 ;; must have paths to jshint and node for emacs-flymake
-(setenv "PATH" (concat "~/git/homebrew/bin:" "~/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "~/git/homebrew/share/npm/bin:" (getenv "PATH")))
-(setenv "NODE_PATH" (concat "~/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
+(setenv "PATH" (concat "/Users/splumlee/git/homebrew/bin:" "/Users/splumlee/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "/Users/splumlee/git/homebrew/share/npm/bin:" (getenv "PATH")))
+(setenv "NODE_PATH" (concat "/Users/splumlee/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
 (setq exec-path
 	  '(
-	"~/git/homebrew/bin" ":"
-	"~/git/homebrew/share/npm/bin/" ":"
+	"/Users/splumlee/git/homebrew/bin" ":"
+	"/Users/splumlee/git/homebrew/share/npm/bin/" ":"
 	))
 
 ;; various tools and pieces
 ;; keep backup files in one place
-(setq backup-directory-alist (quote ((".*" . "~/backups/" ))))
-(setq auto-save-file-name-transforms `((".*", "~/backups/" t)))
+(setq backup-directory-alist (quote ((".*" . "/Users/splumlee/backups/" ))))
+(setq auto-save-file-name-transforms `((".*", "/Users/splumlee/backups/" t)))
 
 ;; got used to this in terminal
 (global-set-key (kbd "C--") 'undo)
@@ -90,32 +98,57 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; palpimset
+(add-to-list 'load-path "/Users/splumlee/git/Palimpsest/")
+(require 'palimpsest);
+
+;; git-gutter
+(add-to-list 'load-path "/Users/splumlee/git/emacs-git-gutter/")
+(require 'git-gutter)
+;; If you enable global minor mode
+(global-git-gutter-mode nil)
+;; If you enable git-gutter-mode for some modes
+(add-hook 'js3-mode-hook 'git-gutter-mode)
+;; bind git-gutter toggle command
+(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+;; Jump to next/previous diff
+(global-set-key (kbd "C-x p") 'git-gutter:previous-diff)
+(global-set-key (kbd "C-x n") 'git-gutter:next-diff)
+;; ignore all spaces
+(setq git-gutter:diff-option "-w")
+
 ;; flymake mode
 ;; 
-(add-to-list 'load-path "~/git/emacs-flymake/")
+(add-to-list 'load-path "/Users/splumlee/git/emacs-flymake/")
 (require 'flymake);
 ;; (setq flymake-log-level 3)
 ;; https://github.com/illusori/emacs-flymake
-(add-to-list 'load-path "~/git/emacs-flymake-cursor/")
-;; (add-hook 'find-file-hook 'flymake-find-file-hook)
+(add-to-list 'load-path "/Users/splumlee/git/emacs-flymake-cursor/")
+(add-hook 'find-file-hook 'flymake-find-file-hook)
 ;; https://github.com/illusori/emacs-flymake-cursor
 (eval-after-load 'flymake '(require 'flymake-cursor))
+;; (eval-after-load 'flymake 
+;;   '(defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
+;; 	 (setq flymake-check-was-interrupted t))
+;;   (ad-activate 'flymake-post-syntax-check))
+
 (setq flymake-max-parallel-syntax-checks 8)
 (setq flymake-run-in-place nil)
 (setq temporary-file-directory "/tmp")
 
 ;; desktop mode
 (desktop-save-mode 1)
-(setq desktop-path '("~/Dropbox"))
+(setq desktop-path '("/Users/splumlee/Dropbox"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PACKAGES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; abbrevs always on
-;; (read-abbrev-file "~/.abbrev_defs")
-;; (setq abbrev-mode t)
-;; (setq save-abbrevs t)
+(read-abbrev-file "/Users/splumlee/.abbrev_defs")
+(setq abbrev-mode t)
+(setq save-abbrevs t)
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward)
@@ -130,7 +163,7 @@
 
 (require 'saveplace)
 (setq-default save-place t)
-(setq save-place-file "~/.saveplace")
+(setq save-place-file "/Users/splumlee/.saveplace")
 
 ;; recent files
 (require 'recentf)
@@ -148,22 +181,22 @@
 
 (defun etdo ()
   (interactive)
-  (find-file "~/Dropbox/et/todo.notes")
+  (find-file "/Users/splumlee/Dropbox/et/todo.notes")
   )
 
 (defun todo ()
   (interactive)
-  (find-file "~/Dropbox/org/tasks.notes")
+  (find-file "/Users/splumlee/Dropbox/org/tasks.notes")
   )
 
 (defun reg ()
   (interactive)
-  (find-file "~/git/emacs/regex")
+  (find-file "/Users/splumlee/git/emacs/regex")
   )
 
 (defun memories ()
   (interactive)
-  (find-file "~/Dropbox/memories.txt")
+  (find-file "/Users/splumlee/Dropbox/memories.txt")
   (insert "\n")
   (insert (format-time-string "%Y-%m-%d-%R"))
   (insert "\n")
@@ -171,20 +204,21 @@
 
 (defun codereview ()
   (interactive)
-  (find-file "~/Dropbox/et/codereviews.txt")
+  (find-file "/Users/splumlee/Dropbox/et/codereviews.txt")
   )
 
-(defun scrach ()
+(defun scratch ()
   (interactive)
-  (find-file "~/Dropbox/scrach")
+  (find-file "/Users/splumlee/Dropbox/scratch")
   (insert "\n")
   )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; THEMES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'load-path "~/git/solarized-emacs/")
-(add-to-list 'custom-theme-load-path "~/git/solarized-emacs/")
+(add-to-list 'load-path "/Users/splumlee/git/solarized-emacs/")
+(add-to-list 'custom-theme-load-path "/Users/splumlee/git/solarized-emacs/")
 (load-theme 'solarized-dark t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -192,12 +226,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; node and npm installed via homebrew
 ;; so they use this location for global items
-;; (add-to-list 'load-path "~/git/jshint-mode")
+;; (add-to-list 'load-path "/Users/splumlee/git/jshint-mode")
 ;; (require 'flymake-jshint)
 
-(add-to-list 'load-path "~/git/js3-mode")
+(add-to-list 'load-path "/Users/splumlee/git/js3-mode")
 (autoload 'js3-mode "js3" nil t)
+
+(add-to-list 'load-path "/Users/splumlee/git/js-doc")
+(require 'js-doc)
+(add-hook 'js3-mode-hook
+          (lambda ()
+              (define-key js3-mode-map "\C-ci" 'js-doc-insert-function-doc)
+              (define-key js3-mode-map "@" 'js-doc-insert-tag)))
+
 (add-hook 'js3-mode-hook (lambda () (flymake-mode t)))
+(setq js3-global-externs 'define)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 (add-to-list 'auto-mode-alist '("\\.json$" . js3-mode))
 
@@ -239,6 +282,7 @@
 	'(js3-max-columns 80)
 	'(js3-mirror-mode t)
 	'(js3-mode-escape-quotes nil)
+;;	'(js3-global-externs '(define require))
 )
 
 (custom-set-faces
