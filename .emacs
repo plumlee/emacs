@@ -5,6 +5,8 @@
 (setq tab-stop-list (number-sequence 4 200 4))
 (setq indent-line-function 'insert-tab)
 
+(setq temporary-file-directory "/tmp")
+
 (cua-mode 0)
 
 (add-to-list 'load-path "/Users/splumlee/git/emacs/packages")
@@ -100,8 +102,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; palpimset
-(add-to-list 'load-path "/Users/splumlee/git/Palimpsest/")
-(require 'palimpsest);
+;; (add-to-list 'load-path "/Users/splumlee/git/Palimpsest/")
+;; (require 'palimpsest);
 
 ;; git-gutter
 (add-to-list 'load-path "/Users/splumlee/git/emacs-git-gutter/")
@@ -134,8 +136,7 @@
 ;;   (ad-activate 'flymake-post-syntax-check))
 
 (setq flymake-max-parallel-syntax-checks 8)
-(setq flymake-run-in-place nil)
-(setq temporary-file-directory "/tmp")
+
 
 ;; desktop mode
 (desktop-save-mode 1)
@@ -283,6 +284,10 @@
 	'(js3-mirror-mode t)
 	'(js3-mode-escape-quotes nil)
 ;;	'(js3-global-externs '(define require))
+
+;; flymake
+	'(flymake-run-in-place nil)
+
 )
 
 (custom-set-faces
