@@ -16,6 +16,8 @@
 ;; (add-to-list 'load-path "/Users/splumlee/git/dash.el")
 ;; (require 'smartparens);
 ;; (smartparens-global-mode 1)
+(require 'textexpander-sync)
+ (setq default-abbrev-mode t)
 
 (show-paren-mode t)
 
@@ -131,12 +133,10 @@
 ;; https://github.com/illusori/emacs-flymake-cursor
 (eval-after-load 'flymake '(require 'flymake-cursor))
 ;; (eval-after-load 'flymake 
-;;   '(defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
-;; 	 (setq flymake-check-was-interrupted t))
-;;   (ad-activate 'flymake-post-syntax-check))
-
+;;	 '(defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
+;;	 (setq flymake-check-was-interrupted t))
+;;	 (ad-activate 'flymake-post-syntax-check))
 (setq flymake-max-parallel-syntax-checks 8)
-
 
 ;; desktop mode
 (desktop-save-mode 1)
@@ -214,7 +214,6 @@
   (insert "\n")
   )
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; THEMES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -225,6 +224,35 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; js REPL using NODE
+(require 'js-comint)
+;;	Set inferior-js-program-command to the execution command for running your javascript REPL
+;; Use node as our repl
+(setq inferior-js-program-command "node")
+ 
+(setq inferior-js-mode-hook
+	  (lambda ()
+		;; We like nice colors
+		(ansi-color-for-comint-mode-on)
+		;; Deal with some prompt nonsense
+		(add-to-list 'comint-preoutput-filter-functions
+					 (lambda (output)
+					   (replace-regexp-in-string ".*1G\.\.\..*5G" "..."
+					   (replace-regexp-in-string ".*1G.*3G" "&gt;" output)
+					   (replace-regexp-in-string "\033\\[[0-9]+[GK]" "" output)
+)))))
+
+;; json mode
+(add-to-list 'load-path "/Users/splumlee/git/json-mode")
+(require 'json-mode)
+(add-hook 'json-mode-hook
+	  '(lambda ()
+		 (add-hook 'before-save-hook
+				   (lambda ()
+					 (tabify (point-min) (point-max))))
+))
+(add-to-list 'auto-mode-alist '("\\.jshintrc$" . json-mode))
+
 ;; node and npm installed via homebrew
 ;; so they use this location for global items
 ;; (add-to-list 'load-path "/Users/splumlee/git/jshint-mode")
@@ -236,59 +264,43 @@
 (add-to-list 'load-path "/Users/splumlee/git/js-doc")
 (require 'js-doc)
 (add-hook 'js3-mode-hook
-          (lambda ()
-              (define-key js3-mode-map "\C-ci" 'js-doc-insert-function-doc)
-              (define-key js3-mode-map "@" 'js-doc-insert-tag)))
+		  (lambda ()
+			  (define-key js3-mode-map "\C-ci" 'js-doc-insert-function-doc)
+			  (define-key js3-mode-map "@" 'js-doc-insert-tag)))
 
 (add-hook 'js3-mode-hook (lambda () (flymake-mode t)))
 (setq js3-global-externs 'define)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
-(add-to-list 'auto-mode-alist '("\\.json$" . js3-mode))
-
-(defun js3-mode-tabify ()
-	   (save-excursion
-		 (goto-char (point-min))
-		 (while (re-search-forward "[ \t]+$" nil t)
-		   (delete-region (match-beginning 0) (match-end 0)))
-		 (goto-char (point-min))
-		 (if (search-forward "\t" nil t)
-			 (tabify (1- (point)) (point-max))))
-	   nil)
-
 (add-hook 'js3-mode-hook
-	  '(lambda ()
-		 (make-local-variable 'write-contents-hooks)
-		 (add-hook 'write-contents-hooks 'js3-mode-tabify)))
+		  '(lambda ()
+			   (add-hook 'before-save-hook
+						 (lambda ()
+							 (tabify (point-min) (point-max))))
+			   ))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CUSTOM
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.b
+ ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
- ;; js3
-	'(js3-auto-indent-p t)			; it's nice for commas to right themselves.
-	'(js3-enter-indents-newline t) ; don't need to push tab before typing
-	'(js3-indent-on-enter-key t)	; fix indenting before moving on
-	'(js3-indent-dots t)
-	'(js3-indent-tabs-mode t)
-	'(js3-indent-level 4)
-	'(js3-expr-indent-offset t)
-	'(js3-paren-indent-offset 0)
-	'(js3-square-indent-offset 0)
-	'(js3-curly-indent-offset 0)
-	'(js3-max-columns 80)
-	'(js3-mirror-mode t)
-	'(js3-mode-escape-quotes nil)
-;;	'(js3-global-externs '(define require))
-
-;; flymake
-	'(flymake-run-in-place nil)
-
-)
+ '(flymake-run-in-place nil)
+ '(js3-auto-indent-p t)
+ '(js3-consistent-level-indent-inner-bracket t)
+ '(js3-curly-indent-offset 0)
+ '(js3-enter-indents-newline t)
+ '(js3-expr-indent-offset 0)
+ '(js3-global-externs (mapcar (quote symbol-name) (quote (require define JSON process __dirname console exports))))
+ '(js3-indent-dots t)
+ '(js3-indent-level 4)
+ '(js3-indent-on-enter-key t)
+ '(js3-indent-tabs-mode t)
+ '(js3-max-columns 80)
+ '(js3-mirror-mode t)
+ '(js3-mode-escape-quotes nil)
+ '(js3-mode-global externs)
+ '(js3-paren-indent-offset 0)
+ '(js3-square-indent-offset 0)
+ '(sgml-basic-offset 4))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -297,3 +309,4 @@
  ;; If there is more than one, they won't work right.
  )
 
+(put 'upcase-region 'disabled nil)
