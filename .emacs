@@ -9,8 +9,62 @@
 
 (cua-mode 0)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BUFFERS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; http://ergoemacs.org/emacs/emacs_buffer_management.html
+(defalias 'list-buffers 'ibuffer)
+;; make buffer switch command show suggestions
+(ido-mode 1)
+(defun next-user-buffer ()
+  "Switch to the next user buffer.
+User buffers are those whose name does not start with *."
+  (interactive)
+  (next-buffer)
+  (let ((i 0))
+	(while (and (string-match "^*" (buffer-name)) (< i 50))
+	  (setq i (1+ i)) (next-buffer) )))
+
+(defun previous-user-buffer ()
+  "Switch to the previous user buffer.
+User buffers are those whose name does not start with *."
+  (interactive)
+  (previous-buffer)
+  (let ((i 0))
+	(while (and (string-match "^*" (buffer-name)) (< i 50))
+	  (setq i (1+ i)) (previous-buffer) )))
+
+(defun next-emacs-buffer ()
+  "Switch to the next emacs buffer.
+Emacs buffers are those whose name starts with *."
+  (interactive)
+  (next-buffer)
+  (let ((i 0))
+	(while (and (not (string-match "^*" (buffer-name))) (< i 50))
+	  (setq i (1+ i)) (next-buffer) )))
+
+(defun previous-emacs-buffer ()
+  "Switch to the previous emacs buffer.
+Emacs buffers are those whose name starts with *."
+  (interactive)
+  (previous-buffer)
+  (let ((i 0))
+	(while (and (not (string-match "^*" (buffer-name))) (< i 50))
+	  (setq i (1+ i)) (previous-buffer) )))
+
+;; sample easy keys
+
+(global-set-key (kbd "<f5>") 'find-file) ; Open file or dir
+(global-set-key (kbd "<f6>") 'kill-this-buffer) ; Close file
+
+;; (global-set-key (kbd "<C-prior>") 'previous-user-buffer) ; Ctrl+PageUp
+;; (global-set-key (kbd "<C-next>") 'next-user-buffer) ; Ctrl+PageDown
+;; (global-set-key (kbd "<C-S-prior>") 'previous-emacs-buffer) ; Ctrl+Shift+PageUp
+;; (global-set-key (kbd "<C-S-next>") 'next-emacs-buffer) ; Ctrl+Shift+PageDown
+
 (add-to-list 'load-path "/Users/splumlee/git/emacs/packages")
 (require 'markdown-mode);
+(add-to-list 'auto-mode-alist '("\\.txt$" . markdown-mode))
 
 ;; (add-to-list 'load-path "/Users/splumlee/git/smartparens")
 ;; (add-to-list 'load-path "/Users/splumlee/git/dash.el")
@@ -123,7 +177,6 @@
 (setq git-gutter:diff-option "-w")
 
 ;; flymake mode
-;; 
 (add-to-list 'load-path "/Users/splumlee/git/emacs-flymake/")
 (require 'flymake);
 ;; (setq flymake-log-level 3)
@@ -220,6 +273,11 @@
 (add-to-list 'load-path "/Users/splumlee/git/solarized-emacs/")
 (add-to-list 'custom-theme-load-path "/Users/splumlee/git/solarized-emacs/")
 (load-theme 'solarized-dark t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HTML
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'auto-mode-alist '("\\.hbs$" . html-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
