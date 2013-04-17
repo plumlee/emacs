@@ -1,3 +1,7 @@
+(add-to-list 'load-path "/Users/splumlee/git/emacs/packages")
+(add-to-list 'load-path "/Users/splumlee/git")
+(add-to-list 'load-path "~/.emacs.d/")
+
 (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 
 (setq-default indent-tabs-mode t)
@@ -29,6 +33,35 @@
 
 (global-set-key [(meta shift up)]  'move-line-up)
 (global-set-key [(meta shift down)]	 'move-line-down)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ctags
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(load-file "/Users/splumlee/git/eproject/eproject.el")
+(define-project-type node (generic)
+   (look-for "app.js")
+   :relevant-files ("\\.js$"))
+
+(setq path-to-ctags "/Users/splumlee/git/homebrew/bin/ctags")
+
+;; http://mattbriggs.net/blog/2012/03/18/awesome-emacs-plugins-ctags/
+(defun build-ctags ()
+	 (interactive)
+	 (message "building project tags")
+	 (let ((root (eproject-root)))
+	(shell-command (concat "ctags -e -R --extra=+fq --exclude=node_modules --exclude=dist --exclude=.git -f " root "TAGS " root)))
+	 (visit-project-tags)
+	 (message "tags built successfully"))
+
+(defun visit-project-tags ()
+	 (interactive)
+	 (let ((tags-file (concat (eproject-root) "TAGS")))
+	(visit-tags-table tags-file)
+	(message (concat "Loaded " tags-file))))
+
+(setq tags-case-fold-search nil)
+(add-to-list 'load-path "/Users/splumlee/git/etags-select")
+(require 'etags-select);
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BUFFERS
@@ -84,13 +117,10 @@ Emacs buffers are those whose name starts with *."
 ;; (global-set-key (kbd "<C-next>") 'next-user-buffer) ; Ctrl+PageDown
 ;; (global-set-key (kbd "<C-S-prior>") 'previous-emacs-buffer) ; Ctrl+Shift+PageUp
 ;; (global-set-key (kbd "<C-S-next>") 'next-emacs-buffer) ; Ctrl+Shift+PageDown
-
-(add-to-list 'load-path "/Users/splumlee/git/emacs/packages")
+(add-to-list 'load-path "/Users/splumlee/git/markdown-mode")
 (require 'markdown-mode);
 (add-to-list 'auto-mode-alist '("\\.txt$" . markdown-mode))
 
-;; (add-to-list 'load-path "/Users/splumlee/git/smartparens")
-;; (add-to-list 'load-path "/Users/splumlee/git/dash.el")
 ;; (require 'smartparens);
 ;; (smartparens-global-mode 1)
 
@@ -103,8 +133,6 @@ Emacs buffers are those whose name starts with *."
 (global-auto-revert-mode t)
 
 (modify-syntax-entry ?; "w")
-
-(add-to-list 'load-path "/Users/splumlee/git/emacs/packages/")
 
 ;; os x
 (setq mac-command-modifier 'ctrl)
@@ -178,7 +206,7 @@ Emacs buffers are those whose name starts with *."
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; auto-complete
-(add-to-list 'load-path "~/.emacs.d/")
+
 (add-to-list 'load-path "~/git/popup-el/")
 (require 'auto-complete-config)
 (ac-config-default)
@@ -188,8 +216,7 @@ Emacs buffers are those whose name starts with *."
 (setq ac-ignore-case nil)
 
 ;; snippets
-(add-to-list 'load-path
-			  "~/git/yasnippet")
+(add-to-list 'load-path "/Users/splumlee/git/yasnippet")
 (require 'yasnippet)
 (setq yas-snippet-dirs
 	  '("~/git/dotfiles/snippets"
@@ -197,10 +224,6 @@ Emacs buffers are those whose name starts with *."
 
 (yas-global-mode 1) ;; or M-x yas-reload-all if you've started YASnippet already.
 (yas-reload-all)
-
-;; palpimset
-;; (add-to-list 'load-path "/Users/splumlee/git/Palimpsest/")
-;; (require 'palimpsest);
 
 ;; git-gutter
 (add-to-list 'load-path "/Users/splumlee/git/emacs-git-gutter/")
