@@ -9,13 +9,36 @@
 
 (cua-mode 0)
 
+;; highlight current line
+(global-hl-line-mode +1)
+
+(defun move-line-up ()
+  "Move up the current line."
+  (interactive)
+  (transpose-lines 1)
+  (forward-line -2)
+  (indent-according-to-mode))
+
+(defun move-line-down ()
+  "Move down the current line."
+  (interactive)
+  (forward-line 1)
+  (transpose-lines 1)
+  (forward-line -1)
+  (indent-according-to-mode))
+
+(global-set-key [(meta shift up)]  'move-line-up)
+(global-set-key [(meta shift down)]	 'move-line-down)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BUFFERS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; http://ergoemacs.org/emacs/emacs_buffer_management.html
 (defalias 'list-buffers 'ibuffer)
 ;; make buffer switch command show suggestions
-(ido-mode 1)
+
+;; (ido-mode 1)
+
 (defun next-user-buffer ()
   "Switch to the next user buffer.
 User buffers are those whose name does not start with *."
@@ -70,8 +93,6 @@ Emacs buffers are those whose name starts with *."
 ;; (add-to-list 'load-path "/Users/splumlee/git/dash.el")
 ;; (require 'smartparens);
 ;; (smartparens-global-mode 1)
-(require 'textexpander-sync)
- (setq default-abbrev-mode t)
 
 (show-paren-mode t)
 
@@ -156,6 +177,26 @@ Emacs buffers are those whose name starts with *."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; auto-complete
+(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/git/popup-el/")
+(require 'auto-complete-config)
+(ac-config-default)
+; Start auto-completion after 2 characters of a word
+(setq ac-auto-start 2)
+; case sensitivity is important when finding matches
+(setq ac-ignore-case nil)
+
+;; snippets
+(add-to-list 'load-path
+			  "~/git/yasnippet")
+(require 'yasnippet)
+(setq yas-snippet-dirs
+	  '("~/git/dotfiles/snippets"
+		))
+
+(yas-global-mode 1) ;; or M-x yas-reload-all if you've started YASnippet already.
+(yas-reload-all)
 
 ;; palpimset
 ;; (add-to-list 'load-path "/Users/splumlee/git/Palimpsest/")
@@ -212,8 +253,9 @@ Emacs buffers are those whose name starts with *."
 		 '("marmalade" . "http://marmalade-repo.org/packages/")
 )
 
-;; (require 'textexpander-sync)
-;; (textexpander-sync)
+(require 'textexpander-sync)
+(textexpander-sync)
+(setq default-abbrev-mode t)
 
 (require 'saveplace)
 (setq-default save-place t)
@@ -228,9 +270,14 @@ Emacs buffers are those whose name starts with *."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun insert-time ()
+(defun intm ()
   (interactive)
   (insert (format-time-string "%Y-%m-%d-%R"))
+  )
+
+(defun indt ()
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d"))
   )
 
 (defun etdo ()
@@ -300,6 +347,7 @@ Emacs buffers are those whose name starts with *."
 					   (replace-regexp-in-string "\033\\[[0-9]+[GK]" "" output)
 )))))
 
+
 ;; json mode
 (add-to-list 'load-path "/Users/splumlee/git/json-mode")
 (require 'json-mode)
@@ -327,6 +375,8 @@ Emacs buffers are those whose name starts with *."
 			  (define-key js3-mode-map "@" 'js-doc-insert-tag)))
 
 (add-hook 'js3-mode-hook (lambda () (flymake-mode t)))
+(add-hook 'js3-mode-hook (lambda () (yas-minor-mode)))
+(add-hook 'js3-mode-hook (lambda () (auto-complete-mode t)))
 (setq js3-global-externs 'define)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 (add-hook 'js3-mode-hook
@@ -368,3 +418,4 @@ Emacs buffers are those whose name starts with *."
  )
 
 (put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
