@@ -13,6 +13,8 @@
 
 (cua-mode 0)
 
+(global-auto-revert-mode t)
+
 ;; highlight current line
 (global-hl-line-mode +1)
 
@@ -36,9 +38,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ctags
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "/Users/splumlee/git/etags-select")
+(require 'etags-select);
 (load-file "/Users/splumlee/git/eproject/eproject.el")
-(define-project-type node (generic)
-   (look-for "app.js")
+(define-project-type stackato (generic)
+   (look-for "stackato.yml")
    :relevant-files ("\\.js$"))
 
 (setq path-to-ctags "/Users/splumlee/git/homebrew/bin/ctags")
@@ -58,9 +62,15 @@
 	(visit-tags-table tags-file)
 	(message (concat "Loaded " tags-file))))
 
-(setq tags-case-fold-search nil)
-(add-to-list 'load-path "/Users/splumlee/git/etags-select")
-(require 'etags-select);
+(defun my-find-tag ()
+  (interactive)
+  (if (file-exists-p (concat (eproject-root) "TAGS"))
+	  (visit-project-tags)
+	(build-ctags))
+  (etags-select-find-tag-at-point))
+
+(global-set-key (kbd "M-.") 'my-find-tag)
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -130,8 +140,6 @@ Emacs buffers are those whose name starts with *."
 (setq server-socket-dir (format "/tmp/emacs%d" (user-uid)))
 (server-start)
 
-(global-auto-revert-mode t)
-
 (modify-syntax-entry ?; "w")
 
 ;; os x
@@ -182,10 +190,6 @@ Emacs buffers are those whose name starts with *."
 (defalias 'fold 'jao-toggle-selective-display)
 (defalias 'rename 'rename-file-and-buffer)
 (defalias 'fe 'flymake-display-err-menu-for-current-line)
-
-;; keep what's on disk in the buffers
-;; should prevent bad habits too
-(global-auto-revert-mode t)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -431,8 +435,9 @@ Emacs buffers are those whose name starts with *."
  '(js3-mode-global externs)
  '(js3-paren-indent-offset 0)
  '(js3-square-indent-offset 0)
- '(sgml-basic-offset 4))
-
+ '(sgml-basic-offset 4)
+ '(tags-case-fold-search nil)
+)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
