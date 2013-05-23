@@ -151,11 +151,15 @@ Emacs buffers are those whose name starts with *."
 ;; must have paths to jshint and node for emacs-flymake
 (setenv "PATH" (concat "/Users/splumlee/git/homebrew/bin:" "/Users/splumlee/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "/Users/splumlee/git/homebrew/share/npm/bin:" (getenv "PATH")))
 (setenv "NODE_PATH" (concat "/Users/splumlee/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
-(setq exec-path
-	  '(
-	"/Users/splumlee/git/homebrew/bin" ":"
-	"/Users/splumlee/git/homebrew/share/npm/bin/" ":"
-	))
+
+;; http://stackoverflow.com/questions/8606954/path-and-exec-path-set-but-emacs-does-not-find-executable/8609349#8609349
+(defun set-exec-path-from-shell-PATH ()
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+	(setenv "PATH" path-from-shell)
+	(setq exec-path (split-string path-from-shell path-separator))))
+
+(set-exec-path-from-shell-PATH);
 
 ;; various tools and pieces
 ;; keep backup files in one place
@@ -430,7 +434,7 @@ Emacs buffers are those whose name starts with *."
  '(js3-indent-on-enter-key t)
  '(js3-indent-tabs-mode t)
  '(js3-max-columns 80)
- '(js3-mirror-mode t)
+ '(js3-mirror-mode nil)
  '(js3-mode-escape-quotes nil)
  '(js3-mode-global externs)
  '(js3-paren-indent-offset 0)
