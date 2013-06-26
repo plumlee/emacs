@@ -1,19 +1,118 @@
+(setq-default enable-local-variables :safe)
+
+;; don't screw with whitespace and tabs unless in our own projects
+;; (dir-locals-set-directory-class
+;;	"~/git/third-party" 'git-third-party)
+
+(dir-locals-set-class-variables 'git-default
+				'((nil . (
+					  (indent-tabs-mode . t)
+					  (default-tab-width . 4)
+					  (tab-stop-list . (number-sequence 4 200 4))
+					  ;; (indent-line-function . 'insert-spaces)
+					  (sgml-basic-offset . 4)
+					  (js3-indent-level . 4)
+					  (js3-indent-tabs-mode . t)
+					  )))
+)
+
+(dir-locals-set-class-variables 'git-personal
+				'((nil . (
+					  (indent-tabs-mode . t)
+					  (default-tab-width . 4)
+					  (tab-stop-list . (number-sequence 4 200 4))
+					  ;; (indent-line-function . 'insert-tab)
+					  (sgml-basic-offset . 4)
+					  (js3-indent-level . 4)
+					  (js3-indent-tabs-mode . t)
+					  )))
+)
+
+(dir-locals-set-class-variables 'git-et-fuel
+				'((nil . (
+					  (indent-tabs-mode . t)
+					  (default-tab-width . 4)
+					  (tab-stop-list . (number-sequence 4 200 4))
+					  ;; (indent-line-function . 'insert-tab)
+					  (sgml-basic-offset . 4)
+					  (js3-indent-level . 4)
+					  (js3-indent-tabs-mode . t)
+					  )))
+)
+
+(dir-locals-set-class-variables 'git-plumlee-work
+				'((nil . (
+					  (indent-tabs-mode . t)
+					  (default-tab-width . 4)
+					  (tab-stop-list . (number-sequence 4 200 4))
+					  (sgml-basic-offset . 4)
+					  (js3-indent-level . 4)
+					  (js3-indent-tabs-mode . t)
+					  )))
+)
+
+(dir-locals-set-class-variables 'git-volo
+				'((nil . (
+					  (indent-tabs-mode . f)
+					  (default-tab-width . 4)
+					  (tab-stop-list . (number-sequence 4 200 4))
+					  ;; (indent-line-function . 'insert-spaces)
+					  (sgml-basic-offset . 4)
+					  (js3-indent-level . 4)
+					  (js3-indent-tabs-mode . f)
+					  (js3-curly-indent-offset . 2)
+					  )))
+)
+
+(dir-locals-set-directory-class
+ "~/git" 'git-default)
+
+(dir-locals-set-directory-class
+ "~/git/personal" 'git-personal)
+
+(dir-locals-set-directory-class
+ "~/git/fuel2" 'git-et-fuel)
+
+(dir-locals-set-directory-class
+ "~/git/plumlee-work" 'git-plumlee-work
+)
+
+(dir-locals-set-directory-class
+ "~/git/third-party/volo" 'git-volo)
+
 (add-to-list 'load-path "/Users/splumlee/git/emacs/packages")
 (add-to-list 'load-path "/Users/splumlee/git")
 (add-to-list 'load-path "~/.emacs.d/")
 
 (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 
-(setq-default indent-tabs-mode t)
-(setq default-tab-width 4)
-(setq tab-stop-list (number-sequence 4 200 4))
-(setq indent-line-function 'insert-tab)
+;; (setq-default indent-tabs-mode t)
+;; (setq default-tab-width 4)
+;; (setq tab-stop-list (number-sequence 4 200 4))
+;; (setq indent-line-function 'insert-tab)
 
 (setq temporary-file-directory "/tmp")
 
 (cua-mode 0)
 
 (global-auto-revert-mode t)
+
+(setq frame-title-format
+	  (list (format "%s %%S: %%j " (system-name))
+		'(buffer-file-name "%f" (dired-directory dired-directory "%b"))))
+
+(defun copy-full-path-to-kill-ring ()
+  "copy buffer's full path to kill ring"
+  (interactive)
+  (when buffer-file-name
+	(kill-new (file-truename buffer-file-name))))
+
+;; (defun show-file-name ()
+;;	 "Show the full path file name in the minibuffer."
+;;	 (interactive)
+;;	 (message (buffer-file-name)))
+
+(global-set-key (kbd "<f1>") 'copy-full-path-to-kill-ring)
 
 ;; highlight current line
 (global-hl-line-mode +1)
@@ -130,6 +229,8 @@ Emacs buffers are those whose name starts with *."
 (add-to-list 'load-path "/Users/splumlee/git/markdown-mode")
 (require 'markdown-mode);
 (add-to-list 'auto-mode-alist '("\\.txt$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown$" . markdown-mode))
 
 ;; (require 'smartparens);
 ;; (smartparens-global-mode 1)
@@ -151,6 +252,7 @@ Emacs buffers are those whose name starts with *."
 ;; must have paths to jshint and node for emacs-flymake
 (setenv "PATH" (concat "/Users/splumlee/git/homebrew/bin:" "/Users/splumlee/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "/Users/splumlee/git/homebrew/share/npm/bin:" (getenv "PATH")))
 (setenv "NODE_PATH" (concat "/Users/splumlee/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
+(setenv "NODE_NO_READLINE" "1")
 
 ;; http://stackoverflow.com/questions/8606954/path-and-exec-path-set-but-emacs-does-not-find-executable/8609349#8609349
 (defun set-exec-path-from-shell-PATH ()
@@ -355,7 +457,10 @@ Emacs buffers are those whose name starts with *."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HTML
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'auto-mode-alist '("\\.hbs$" . html-mode))
+(add-to-list 'load-path "/Users/splumlee/git/web-mode")
+(require 'web-mode);
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.hbs$" . web-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JAVASCRIPT
@@ -377,17 +482,28 @@ Emacs buffers are those whose name starts with *."
 					   (replace-regexp-in-string ".*1G.*3G" "&gt;" output)
 					   (replace-regexp-in-string "\033\\[[0-9]+[GK]" "" output)
 )))))
-
+(add-hook 'js3-mode-hook '(lambda () 
+                (local-set-key "\C-x\C-e" 
+                                'js-send-last-sexp)
+                (local-set-key "\C-\M-x" 
+                                'js-send-last-sexp-and-go)
+                (local-set-key "\C-cb" 
+                                'js-send-buffer)
+                (local-set-key "\C-c\C-b" 
+                                'js-send-buffer-and-go)
+                (local-set-key "\C-cl" 
+                                'js-load-file-and-go)
+))
 
 ;; json mode
 (add-to-list 'load-path "/Users/splumlee/git/json-mode")
 (require 'json-mode)
-(add-hook 'json-mode-hook
-	  '(lambda ()
-		 (add-hook 'before-save-hook
-				   (lambda ()
-					 (tabify (point-min) (point-max))))
-))
+;; (add-hook 'json-mode-hook
+;;	  '(lambda ()
+;;		 (add-hook 'before-save-hook
+;;				   (lambda ()
+;;					 (tabify (point-min) (point-max))))
+;; ))
 (add-to-list 'auto-mode-alist '("\\.jshintrc$" . json-mode))
 
 ;; node and npm installed via homebrew
@@ -410,18 +526,12 @@ Emacs buffers are those whose name starts with *."
 (add-hook 'js3-mode-hook (lambda () (auto-complete-mode t)))
 (setq js3-global-externs 'define)
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
-(add-hook 'js3-mode-hook
-		  '(lambda ()
-			   (add-hook 'before-save-hook
-						 (lambda ()
-							 (tabify (point-min) (point-max))))
-			   ))
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes (quote ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(flymake-run-in-place nil)
  '(js3-auto-indent-p t)
  '(js3-consistent-level-indent-inner-bracket t)
@@ -430,18 +540,15 @@ Emacs buffers are those whose name starts with *."
  '(js3-expr-indent-offset 0)
  '(js3-global-externs (mapcar (quote symbol-name) (quote (require define JSON process __dirname console exports))))
  '(js3-indent-dots t)
- '(js3-indent-level 4)
  '(js3-indent-on-enter-key t)
- '(js3-indent-tabs-mode t)
  '(js3-max-columns 80)
  '(js3-mirror-mode nil)
  '(js3-mode-escape-quotes nil)
  '(js3-mode-global externs)
  '(js3-paren-indent-offset 0)
  '(js3-square-indent-offset 0)
- '(sgml-basic-offset 4)
- '(tags-case-fold-search nil)
-)
+ '(safe-local-variable-values (quote ((js3-indent-tabs-mode . f) (indent-tabs-mode . f) (sgml-basic-offset . 4) (js3-indent-tabs-mode t) (js3-indent-level 4) (sgml-basic-offset 4) (custom-set-variables (js3-indent-level 4) (js3-indent-tabs-mode t) (sgml-basic-offset 4)) (default-tab-width . 4))))
+ '(tags-case-fold-search nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
