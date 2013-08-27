@@ -80,8 +80,8 @@
 (dir-locals-set-directory-class
  "~/git/third-party/volo" 'git-volo)
 
-(add-to-list 'load-path "/Users/splumlee/git/emacs/packages")
-(add-to-list 'load-path "/Users/splumlee/git")
+(add-to-list 'load-path "/Users/scott/git/emacs/packages")
+(add-to-list 'load-path "/Users/scott/git")
 (add-to-list 'load-path "~/.emacs.d/")
 
 (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
@@ -137,14 +137,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ctags
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'load-path "/Users/splumlee/git/etags-select")
+(add-to-list 'load-path "/Users/scott/git/etags-select")
 (require 'etags-select);
-(load-file "/Users/splumlee/git/eproject/eproject.el")
+(load-file "/Users/scott/git/eproject/eproject.el")
 (define-project-type stackato (generic)
    (look-for "stackato.yml")
    :relevant-files ("\\.js$"))
 
-(setq path-to-ctags "/Users/splumlee/git/homebrew/bin/ctags")
+(setq path-to-ctags "/Users/scott/git/homebrew/bin/ctags")
 
 ;; http://mattbriggs.net/blog/2012/03/18/awesome-emacs-plugins-ctags/
 (defun build-ctags ()
@@ -226,7 +226,7 @@ Emacs buffers are those whose name starts with *."
 ;; (global-set-key (kbd "<C-next>") 'next-user-buffer) ; Ctrl+PageDown
 ;; (global-set-key (kbd "<C-S-prior>") 'previous-emacs-buffer) ; Ctrl+Shift+PageUp
 ;; (global-set-key (kbd "<C-S-next>") 'next-emacs-buffer) ; Ctrl+Shift+PageDown
-(add-to-list 'load-path "/Users/splumlee/git/markdown-mode")
+(add-to-list 'load-path "/Users/scott/git/markdown-mode")
 (require 'markdown-mode);
 (add-to-list 'auto-mode-alist '("\\.txt$" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
@@ -250,8 +250,8 @@ Emacs buffers are those whose name starts with *."
 
 ;; environment
 ;; must have paths to jshint and node for emacs-flymake
-(setenv "PATH" (concat "/Users/splumlee/git/homebrew/bin:" "/Users/splumlee/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "/Users/splumlee/git/homebrew/share/npm/bin:" (getenv "PATH")))
-(setenv "NODE_PATH" (concat "/Users/splumlee/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
+(setenv "PATH" (concat "/Users/scott/git/homebrew/bin:" "/Users/scott/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "/Users/scott/git/homebrew/share/npm/bin:" (getenv "PATH")))
+(setenv "NODE_PATH" (concat "/Users/scott/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
 (setenv "NODE_NO_READLINE" "1")
 
 ;; http://stackoverflow.com/questions/8606954/path-and-exec-path-set-but-emacs-does-not-find-executable/8609349#8609349
@@ -265,8 +265,8 @@ Emacs buffers are those whose name starts with *."
 
 ;; various tools and pieces
 ;; keep backup files in one place
-(setq backup-directory-alist (quote ((".*" . "/Users/splumlee/backups/" ))))
-(setq auto-save-file-name-transforms `((".*", "/Users/splumlee/backups/" t)))
+(setq backup-directory-alist (quote ((".*" . "/Users/scott/backups/" ))))
+(setq auto-save-file-name-transforms `((".*", "/Users/scott/backups/" t)))
 
 ;; got used to this in terminal
 (global-set-key (kbd "C--") 'undo)
@@ -318,6 +318,7 @@ Emacs buffers are those whose name starts with *."
 ;; auto-complete
 
 (add-to-list 'load-path "~/git/popup-el/")
+(add-to-list 'load-path "~/git/auto-complete/")
 (require 'auto-complete-config)
 (ac-config-default)
 ; Start auto-completion after 2 characters of a word
@@ -326,7 +327,7 @@ Emacs buffers are those whose name starts with *."
 (setq ac-ignore-case nil)
 
 ;; snippets
-(add-to-list 'load-path "/Users/splumlee/git/yasnippet")
+(add-to-list 'load-path "/Users/scott/git/yasnippet")
 (require 'yasnippet)
 (setq yas-snippet-dirs
 	  '("~/git/dotfiles/snippets"
@@ -336,7 +337,7 @@ Emacs buffers are those whose name starts with *."
 (yas-reload-all)
 
 ;; git-gutter
-(add-to-list 'load-path "/Users/splumlee/git/emacs-git-gutter/")
+(add-to-list 'load-path "/Users/scott/git/emacs-git-gutter/")
 (require 'git-gutter)
 ;; If you enable global minor mode
 (global-git-gutter-mode nil)
@@ -351,11 +352,11 @@ Emacs buffers are those whose name starts with *."
 (setq git-gutter:diff-option "-w")
 
 ;; flymake mode
-(add-to-list 'load-path "/Users/splumlee/git/emacs-flymake/")
+(add-to-list 'load-path "/Users/scott/git/emacs-flymake/")
 (require 'flymake);
 ;; (setq flymake-log-level 3)
 ;; https://github.com/illusori/emacs-flymake
-(add-to-list 'load-path "/Users/splumlee/git/emacs-flymake-cursor/")
+(add-to-list 'load-path "/Users/scott/git/emacs-flymake-cursor/")
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 ;; https://github.com/illusori/emacs-flymake-cursor
 (eval-after-load 'flymake '(require 'flymake-cursor))
@@ -367,14 +368,14 @@ Emacs buffers are those whose name starts with *."
 
 ;; desktop mode
 (desktop-save-mode 1)
-(setq desktop-path '("/Users/splumlee/Dropbox"))
+(setq desktop-path '("/Users/scott/Dropbox/brody"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PACKAGES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; abbrevs always on
-(read-abbrev-file "/Users/splumlee/.abbrev_defs")
+(read-abbrev-file "/Users/scott/.abbrev_defs")
 (setq abbrev-mode t)
 (setq save-abbrevs t)
 
@@ -392,7 +393,7 @@ Emacs buffers are those whose name starts with *."
 
 (require 'saveplace)
 (setq-default save-place t)
-(setq save-place-file "/Users/splumlee/.saveplace")
+(setq save-place-file "/Users/scott/.saveplace")
 
 ;; recent files
 (require 'recentf)
@@ -415,22 +416,22 @@ Emacs buffers are those whose name starts with *."
 
 (defun etdo ()
   (interactive)
-  (find-file "/Users/splumlee/Dropbox/et/todo.notes")
+  (find-file "/Users/scott/Dropbox/et/todo.notes")
   )
 
 (defun todo ()
   (interactive)
-  (find-file "/Users/splumlee/Dropbox/org/tasks.notes")
+  (find-file "/Users/scott/Dropbox/org/tasks.notes")
   )
 
 (defun reg ()
   (interactive)
-  (find-file "/Users/splumlee/git/emacs/regex")
+  (find-file "/Users/scott/git/emacs/regex")
   )
 
 (defun memories ()
   (interactive)
-  (find-file "/Users/splumlee/Dropbox/memories.txt")
+  (find-file "/Users/scott/Dropbox/memories.txt")
   (insert "\n")
   (insert (format-time-string "%Y-%m-%d-%R"))
   (insert "\n")
@@ -438,26 +439,26 @@ Emacs buffers are those whose name starts with *."
 
 (defun codereview ()
   (interactive)
-  (find-file "/Users/splumlee/Dropbox/et/codereviews.txt")
+  (find-file "/Users/scott/Dropbox/et/codereviews.txt")
   )
 
 (defun scratch ()
   (interactive)
-  (find-file "/Users/splumlee/Dropbox/scratch")
+  (find-file "/Users/scott/Dropbox/scratch")
   (insert "\n")
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; THEMES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'load-path "/Users/splumlee/git/solarized-emacs/")
-(add-to-list 'custom-theme-load-path "/Users/splumlee/git/solarized-emacs/")
+(add-to-list 'load-path "/Users/scott/git/solarized-emacs/")
+(add-to-list 'custom-theme-load-path "/Users/scott/git/solarized-emacs/")
 (load-theme 'solarized-dark t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HTML
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'load-path "/Users/splumlee/git/web-mode")
+(add-to-list 'load-path "/Users/scott/git/web-mode")
 (require 'web-mode);
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.hbs$" . web-mode))
@@ -496,7 +497,7 @@ Emacs buffers are those whose name starts with *."
 ))
 
 ;; json mode
-(add-to-list 'load-path "/Users/splumlee/git/json-mode")
+(add-to-list 'load-path "/Users/scott/git/json-mode")
 (require 'json-mode)
 ;; (add-hook 'json-mode-hook
 ;;	  '(lambda ()
@@ -508,13 +509,13 @@ Emacs buffers are those whose name starts with *."
 
 ;; node and npm installed via homebrew
 ;; so they use this location for global items
-;; (add-to-list 'load-path "/Users/splumlee/git/jshint-mode")
+;; (add-to-list 'load-path "/Users/scott/git/jshint-mode")
 ;; (require 'flymake-jshint)
 
-(add-to-list 'load-path "/Users/splumlee/git/js3-mode")
+(add-to-list 'load-path "/Users/scott/git/js3-mode")
 (autoload 'js3-mode "js3" nil t)
 
-(add-to-list 'load-path "/Users/splumlee/git/js-doc")
+(add-to-list 'load-path "/Users/scott/git/js-doc")
 (require 'js-doc)
 (add-hook 'js3-mode-hook
 		  (lambda ()
