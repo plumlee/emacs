@@ -1,95 +1,78 @@
 (setq-default enable-local-variables :safe)
 
-;; don't screw with whitespace and tabs unless in our own projects
+(setq indent-tabs-mode t)
+(setq default-tab-width 4)
+(setq tab-stop-list (number-sequence 4 200 4))
+:: (set indent-line-function 'insert-tab)
+
+;; (dir-locals-set-class-variables 'git-default
+;; 				'((nil . (
+;; 					  (indent-tabs-mode . t)
+;; 					  (default-tab-width . 4)
+;; 					  (tab-stop-list . (number-sequence 4 200 4))
+;; 					  ;; (indent-line-function . 'insert-spaces)
+;; 					  (sgml-basic-offset . 4)
+;; 					  (js3-indent-level . 4)
+;; 					  (js3-indent-tabs-mode . t)
+;; 					  )))
+;; )
+
+;; (dir-locals-set-class-variables 'git-personal
+;; 				'((nil . (
+;; 					  (indent-tabs-mode . t)
+;; 					  (default-tab-width . 4)
+;; 					  (tab-stop-list . (number-sequence 4 200 4))
+;; 					  ;; (indent-line-function . 'insert-tab)
+;; 					  (sgml-basic-offset . 4)
+;; 					  (js3-indent-level . 4)
+;; 					  (js3-indent-tabs-mode . t)
+;; 					  )))
+;; )
+
+;; (dir-locals-set-class-variables 'git-plumlee-work
+;; 				'((nil . (
+;; 					  (indent-tabs-mode . t)
+;; 					  (default-tab-width . 4)
+;; 					  (tab-stop-list . (number-sequence 4 200 4))
+;; 					  (sgml-basic-offset . 4)
+;; 					  (js3-indent-level . 4)
+;; 					  (js3-indent-tabs-mode . t)
+;; 					  )))
+;; )
+
+;; (dir-locals-set-class-variables 'git-volo
+;; 				'((nil . (
+;; 					  (indent-tabs-mode . f)
+;; 					  (default-tab-width . 4)
+;; 					  (tab-stop-list . (number-sequence 4 200 4))
+;; 					  ;; (indent-line-function . 'insert-spaces)
+;; 					  (sgml-basic-offset . 4)
+;; 					  (js3-indent-level . 4)
+;; 					  (js3-indent-tabs-mode . f)
+;; 					  (js3-curly-indent-offset . 2)
+;; 					  )))
+;; )
+
 ;; (dir-locals-set-directory-class
-;;	"~/git/third-party" 'git-third-party)
+;;  "~/git" 'git-default)
 
-(dir-locals-set-class-variables 'git-default
-				'((nil . (
-					  (indent-tabs-mode . t)
-					  (default-tab-width . 4)
-					  (tab-stop-list . (number-sequence 4 200 4))
-					  ;; (indent-line-function . 'insert-spaces)
-					  (sgml-basic-offset . 4)
-					  (js3-indent-level . 4)
-					  (js3-indent-tabs-mode . t)
-					  )))
-)
+;; (dir-locals-set-directory-class
+;;  "~/git/personal" 'git-personal)
 
-(dir-locals-set-class-variables 'git-personal
-				'((nil . (
-					  (indent-tabs-mode . t)
-					  (default-tab-width . 4)
-					  (tab-stop-list . (number-sequence 4 200 4))
-					  ;; (indent-line-function . 'insert-tab)
-					  (sgml-basic-offset . 4)
-					  (js3-indent-level . 4)
-					  (js3-indent-tabs-mode . t)
-					  )))
-)
+;; (dir-locals-set-directory-class
+;;  "~/git/plumlee-work" 'git-plumlee-work
+;; )
 
-(dir-locals-set-class-variables 'git-et-fuel
-				'((nil . (
-					  (indent-tabs-mode . t)
-					  (default-tab-width . 4)
-					  (tab-stop-list . (number-sequence 4 200 4))
-					  ;; (indent-line-function . 'insert-tab)
-					  (sgml-basic-offset . 4)
-					  (js3-indent-level . 4)
-					  (js3-indent-tabs-mode . t)
-					  )))
-)
-
-(dir-locals-set-class-variables 'git-plumlee-work
-				'((nil . (
-					  (indent-tabs-mode . t)
-					  (default-tab-width . 4)
-					  (tab-stop-list . (number-sequence 4 200 4))
-					  (sgml-basic-offset . 4)
-					  (js3-indent-level . 4)
-					  (js3-indent-tabs-mode . t)
-					  )))
-)
-
-(dir-locals-set-class-variables 'git-volo
-				'((nil . (
-					  (indent-tabs-mode . f)
-					  (default-tab-width . 4)
-					  (tab-stop-list . (number-sequence 4 200 4))
-					  ;; (indent-line-function . 'insert-spaces)
-					  (sgml-basic-offset . 4)
-					  (js3-indent-level . 4)
-					  (js3-indent-tabs-mode . f)
-					  (js3-curly-indent-offset . 2)
-					  )))
-)
-
-(dir-locals-set-directory-class
- "~/git" 'git-default)
-
-(dir-locals-set-directory-class
- "~/git/personal" 'git-personal)
-
-(dir-locals-set-directory-class
- "~/git/fuel2" 'git-et-fuel)
-
-(dir-locals-set-directory-class
- "~/git/plumlee-work" 'git-plumlee-work
-)
-
-(dir-locals-set-directory-class
- "~/git/third-party/volo" 'git-volo)
+;; (dir-locals-set-directory-class
+;;  "~/git/third-party/volo" 'git-volo)
 
 (add-to-list 'load-path "/Users/scott/git/emacs/packages")
 (add-to-list 'load-path "/Users/scott/git")
-(add-to-list 'load-path "~/.emacs.d/")
+(let ((default-directory "~/.emacs.d/elpa/"))
+  (normal-top-level-add-to-load-path '("."))
+  (normal-top-level-add-subdirs-to-load-path))
 
-(setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
-
-;; (setq-default indent-tabs-mode t)
-;; (setq default-tab-width 4)
-;; (setq tab-stop-list (number-sequence 4 200 4))
-;; (setq indent-line-function 'insert-tab)
+:: (setq whitespace-style '(trailing space-before-tab indentation empty space-after-tab))
 
 (setq temporary-file-directory "/tmp")
 
@@ -250,8 +233,8 @@ Emacs buffers are those whose name starts with *."
 
 ;; environment
 ;; must have paths to jshint and node for emacs-flymake
-(setenv "PATH" (concat "/Users/scott/git/homebrew/bin:" "/Users/scott/git/homebrew/share/npm/lib/node_modules/jshint/bin:" "/Users/scott/git/homebrew/share/npm/bin:" (getenv "PATH")))
-(setenv "NODE_PATH" (concat "/Users/scott/git/homebrew/bin/node" (concat (getenv "NODE_PATH"))))
+;; (setenv "PATH" (concat "/usr/local/bin:" "/usr/local/share/npm/lib/node_modules/jshint/bin:" "/usr/local/share/npm/bin:" (getenv "PATH")))
+(setenv "NODE_PATH" (concat "/usr/local/bin/node" (concat (getenv "NODE_PATH"))))
 (setenv "NODE_NO_READLINE" "1")
 
 ;; http://stackoverflow.com/questions/8606954/path-and-exec-path-set-but-emacs-does-not-find-executable/8609349#8609349
@@ -264,9 +247,23 @@ Emacs buffers are those whose name starts with *."
 (set-exec-path-from-shell-PATH);
 
 ;; various tools and pieces
-;; keep backup files in one place
-(setq backup-directory-alist (quote ((".*" . "/Users/scott/backups/" ))))
-(setq auto-save-file-name-transforms `((".*", "/Users/scott/backups/" t)))
+(setq make-backup-files nil)
+
+;; (setq backup-file-directory "/Users/scott/backups")
+;; (setq backup-directory-alist
+;;           `((".*" . ,backup-file-directory)))
+;;     (setq auto-save-file-name-transforms
+;;           `((".*" ,backup-file-directory t)))
+
+;; (message "Deleting old backup files...")
+;; (let ((week (* 60 60 24 7))
+;;       (current (float-time (current-time))))
+;;   (dolist (file (directory-files backup-file-directory t))
+;;     (when (and (backup-file-name-p file)
+;;                (> (- current (float-time (fifth (file-attributes file))))
+;;                   week))
+;;       (message "%s" file)
+;;       (delete-file file))))
 
 ;; got used to this in terminal
 (global-set-key (kbd "C--") 'undo)
@@ -368,16 +365,16 @@ Emacs buffers are those whose name starts with *."
 
 ;; desktop mode
 (desktop-save-mode 1)
-(setq desktop-path '("/Users/scott/Dropbox/brody"))
+(setq desktop-path '("/Users/scott/Dropbox/computers/brody"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PACKAGES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; abbrevs always on
-(read-abbrev-file "/Users/scott/.abbrev_defs")
-(setq abbrev-mode t)
-(setq save-abbrevs t)
+;; (read-abbrev-file "/Users/scott/.abbrev_defs")
+;; (setq abbrev-mode t)
+;; (setq save-abbrevs t)
 
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward)
@@ -387,9 +384,9 @@ Emacs buffers are those whose name starts with *."
 		 '("marmalade" . "http://marmalade-repo.org/packages/")
 )
 
-(require 'textexpander-sync)
-(textexpander-sync)
-(setq default-abbrev-mode t)
+;; (require 'textexpander-sync)
+;; (textexpander-sync)
+;; (setq default-abbrev-mode t)
 
 (require 'saveplace)
 (setq-default save-place t)
@@ -414,14 +411,9 @@ Emacs buffers are those whose name starts with *."
   (insert (format-time-string "%Y-%m-%d"))
   )
 
-(defun etdo ()
-  (interactive)
-  (find-file "/Users/scott/Dropbox/et/todo.notes")
-  )
-
 (defun todo ()
   (interactive)
-  (find-file "/Users/scott/Dropbox/org/tasks.notes")
+  (find-file "/Users/scott/Dropbox/tasks.notes")
   )
 
 (defun reg ()
@@ -458,8 +450,16 @@ Emacs buffers are those whose name starts with *."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HTML
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'load-path "/Users/scott/git/web-mode")
 (require 'web-mode);
+
+(defun web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 4)
+  (setq web-mode-css-indent-offset 4)
+  (setq web-mode-code-indent-offset 4)
+)
+
+(add-hook 'web-mode-hook  'web-mode-hook)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.hbs$" . web-mode))
 
@@ -532,7 +532,6 @@ Emacs buffers are those whose name starts with *."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes (quote ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" default)))
  '(flymake-run-in-place nil)
  '(js3-auto-indent-p t)
  '(js3-consistent-level-indent-inner-bracket t)
@@ -548,7 +547,10 @@ Emacs buffers are those whose name starts with *."
  '(js3-mode-global externs)
  '(js3-paren-indent-offset 0)
  '(js3-square-indent-offset 0)
- '(safe-local-variable-values (quote ((js3-indent-tabs-mode . f) (indent-tabs-mode . f) (sgml-basic-offset . 4) (js3-indent-tabs-mode t) (js3-indent-level 4) (sgml-basic-offset 4) (custom-set-variables (js3-indent-level 4) (js3-indent-tabs-mode t) (sgml-basic-offset 4)) (default-tab-width . 4))))
+ '(sgml-basic-offset 4)
+ '(js3-indent-level 4)
+ '(js3-indent-tabs-mode t)
+
  '(tags-case-fold-search nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
