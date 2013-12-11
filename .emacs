@@ -1,6 +1,11 @@
 (setq inhibit-splash-screen t
       inhibit-startup-message t)
 
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(when (< emacs-major-version 24)
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -14,14 +19,15 @@
 (defun set-exec-path-from-shell-PATH ()
   (interactive)
   (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-	(setenv "PATH" path-from-shell)
-	(setq exec-path (split-string path-from-shell path-separator))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
 
 (set-exec-path-from-shell-PATH)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WHITESPACE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'whitespace)
 (setq-default default-tab-width 4)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
@@ -32,6 +38,8 @@
                                   indentation empty
                                   space-after-tab))
 
+ (setq whitespace-style '(face empty tabs lines-tail trailing))
+ (global-whitespace-mode t)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -119,11 +127,6 @@
 (add-to-list 'custom-theme-load-path "/Users/scott/git/solarized-emacs/")
 (load-theme 'solarized-dark t)
 
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RECENT MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -196,7 +199,7 @@
   '(define-key coffee-mode-map (kbd "M-r") 'coffee-compile-buffer))
 (eval-after-load 'coffee-mode
   '(define-key coffee-mode-map (kbd "C-c f") 'coffee-compile-file))
- 
+
 (setq flymake-coffee-coffeelint-configuration-file
       (concat HOME ".coffeelintrc"))
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
@@ -230,31 +233,31 @@
 ;; JS-COMINT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'js-comint)
-;;	Set inferior-js-program-command to the execution command for running your javascript REPL
+;;  Set inferior-js-program-command to the execution command for running your javascript REPL
 ;; Use node as our repl
 (setq inferior-js-program-command "node")
- 
+
 (setq inferior-js-mode-hook
-	  (lambda ()
-		;; We like nice colors
-		(ansi-color-for-comint-mode-on)
-		;; Deal with some prompt nonsense
-		(add-to-list 'comint-preoutput-filter-functions
-					 (lambda (output)
-					   (replace-regexp-in-string ".*1G\.\.\..*5G" "..."
+      (lambda ()
+        ;; We like nice colors
+        (ansi-color-for-comint-mode-on)
+        ;; Deal with some prompt nonsense
+        (add-to-list 'comint-preoutput-filter-functions
+                     (lambda (output)
+                       (replace-regexp-in-string ".*1G\.\.\..*5G" "..."
                                                  (replace-regexp-in-string ".*1G.*3G" "&gt;" output)
                                                  (replace-regexp-in-string "\033\\[[0-9]+[GK]" "" output)
 )))))
-(add-hook 'js3-mode-hook '(lambda () 
-                (local-set-key "\C-x\C-e" 
+(add-hook 'js3-mode-hook '(lambda ()
+                (local-set-key "\C-x\C-e"
                                 'js-send-last-sexp)
-                (local-set-key "\C-\M-x" 
+                (local-set-key "\C-\M-x"
                                 'js-send-last-sexp-and-go)
-                (local-set-key "\C-cb" 
+                (local-set-key "\C-cb"
                                 'js-send-buffer)
-                (local-set-key "\C-c\C-b" 
+                (local-set-key "\C-c\C-b"
                                 'js-send-buffer-and-go)
-                (local-set-key "\C-cl" 
+                (local-set-key "\C-cl"
                                 'js-load-file-and-go)
 ))
 
@@ -263,7 +266,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'js3-mode)
 (add-hook 'js3-mode-hook
-	  (lambda ()
+      (lambda ()
         (setq js3-auto-indent-p t)
         (setq js3-consistent-level-indent-inner-bracket t)
         (setq js3-curly-indent-offset 0)
@@ -291,16 +294,16 @@
 
 (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 
-(add-hook 'js3-mode-hook '(lambda () 
-                (local-set-key "\C-x\C-e" 
+(add-hook 'js3-mode-hook '(lambda ()
+                (local-set-key "\C-x\C-e"
                                 'js-send-last-sexp)
-                (local-set-key "\C-\M-x" 
+                (local-set-key "\C-\M-x"
                                 'js-send-last-sexp-and-go)
-                (local-set-key "\C-cb" 
+                (local-set-key "\C-cb"
                                 'js-send-buffer)
-                (local-set-key "\C-c\C-b" 
+                (local-set-key "\C-c\C-b"
                                 'js-send-buffer-and-go)
-                (local-set-key "\C-cl" 
+                (local-set-key "\C-cl"
                                 'js-load-file-and-go)
 ))
 
@@ -354,8 +357,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'yasnippet)
 (setq yas-snippet-dirs
-	  '("~/git/dotfiles/snippets"
-		))
+      '("~/git/dotfiles/snippets"
+        ))
 
 (yas-global-mode 1) ;; or M-x yas-reload-all if you've started YASnippet already.
 (yas-reload-all)
@@ -366,4 +369,3 @@
 (require 'smartparens);
 (smartparens-global-mode 1)
 (show-paren-mode t)
-
