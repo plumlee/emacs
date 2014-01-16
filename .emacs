@@ -9,11 +9,32 @@
 (package-initialize)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUT/COPY/PASTE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun copy-line-or-region ()
+  "Copy current line, or current text selection."
+  (interactive)
+  (if (region-active-p)
+      (kill-ring-save (region-beginning) (region-end))
+    (kill-ring-save (line-beginning-position) (line-beginning-position 2)) ) )
+
+(defun cut-line-or-region ()
+  "Cut the current line, or current text selection."
+  (interactive)
+  (if (region-active-p)
+      (kill-region (region-beginning) (region-end))
+    (kill-region (line-beginning-position) (line-beginning-position 2)) ) )
+
+(global-set-key (kbd "<f2>") 'cut-line-or-region) ; cut.
+(global-set-key (kbd "<f3>") 'copy-line-or-region) ; copy.
+(global-set-key (kbd "<f4>") 'yank) ; paste.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ENVIRONMENT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq HOME (expand-file-name "~/"))
 (setq PATH (getenv "PATH"))
-(setq backup-directory-alist '(("." . "~/backups")))
+(setq make-backup-files nil)
+;;(setq backup-directory-alist '(("." . "~/backups")))
 (setenv "NODE_NO_READLINE" "1")
 (setq temporary-file-directory "/tmp")
 (defun set-exec-path-from-shell-PATH ()
@@ -202,7 +223,9 @@
 
 (setq flymake-coffee-coffeelint-configuration-file
       (concat HOME ".coffeelintrc"))
+(require 'flymake-coffee)
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
+(add-hook 'coffee-mode-hook 'auto-complete-mode)
 (add-to-list 'auto-mode-alist '("\\.coffeelintrc$" . json-mode))
 (add-hook 'coffee-mode-hook 'whitespace-mode)
 (add-hook 'coffee-mode-hook 'linum-mode)
@@ -285,9 +308,8 @@
         (setq js3-indent-level 4)
         (setq js3-indent-tabs-mode nil)
         (setq js3-cleanup-whitespace t)
-
-        (auto-complete-mode t)
-        (flymake-mode t)
+        (setq js3-mode-escape-quotes nil)
+      (flymake-mode t)
         (yas-minor-mode)
         (auto-complete-mode t)
         ))
@@ -340,6 +362,14 @@
 (add-hook 'web-mode-hook  'web-mode-hook)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.hbs$" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CSS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-to-list 'auto-mode-alist '("\\.less?\\'" . less-css-mode))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AUTOCOMPLETE
@@ -369,6 +399,11 @@
 (require 'smartparens);
 (smartparens-global-mode 1)
 (show-paren-mode t)
+(add-hook 'smartparens-mode-hook
+      (lambda ()
+        (setq sp-autoescape-string-quote nil)
+        )
+      )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BUFFER MOVE
@@ -378,3 +413,32 @@
 (global-set-key (kbd "<C-S-down>")   'buf-move-down)
 (global-set-key (kbd "<C-S-left>")   'buf-move-left)
 (global-set-key (kbd "<C-S-right>")  'buf-move-right)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CTAGS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq path-to-ctags "/opt/local/bin/ctags")
+(defun create-tags (dir-name)
+    "Create tags file."
+    (interactive "DDirectory: ")
+    (shell-command
+     (format "ctags -f %s -e -R %s" path-to-ctags (directory-file-name dir-name)))
+  )
+(defadvice find-tag (around refresh-etags activate)
+   "Rerun etags and reload tags if tag not found and redo find-tag.
+   If buffer is modified, ask about save before running etags."
+  (let ((extension (file-name-extension (buffer-file-name))))
+    (condition-case err
+    ad-do-it
+      (error (and (buffer-modified-p)
+          (not (ding))
+          (y-or-n-p "Buffer is modified, save it? ")
+          (save-buffer))
+         (er-refresh-etags extension)
+         ad-do-it))))
+  (defun er-refresh-etags (&optional extension)
+  "Run etags on all peer files in current dir and reload them silently."
+  (interactive)
+  (shell-command (format "etags *.%s" (or extension "el")))
+  (let ((tags-revert-without-query t))  ; don't query, revert silently
+    (visit-tags-table default-directory nil)))
