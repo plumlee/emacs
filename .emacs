@@ -28,6 +28,7 @@
 (global-set-key (kbd "<f2>") 'cut-line-or-region) ; cut.
 (global-set-key (kbd "<f3>") 'copy-line-or-region) ; copy.
 (global-set-key (kbd "<f4>") 'yank) ; paste.
+(global-set-key (kbd "<f5>") 'comment-region)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ENVIRONMENT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -53,14 +54,15 @@
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq indent-tabs-mode nil)
-
+(setq whitespace-line-column 78)
 (setq whitespace-action '(auto-cleanup))
 (setq whitespace-style '(trailing space-before-tab
                                   indentation empty
                                   space-after-tab))
 
- (setq whitespace-style '(face empty tabs lines-tail trailing))
- (global-whitespace-mode t)
+(setq whitespace-style '(face empty tabs lines-tail trailing))
+;; (setq whitespace-global-modes '(js3-mode coffee-mode web-mode))
+(global-whitespace-mode t)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -149,6 +151,17 @@
 (load-theme 'solarized-dark t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; YA SNIPPET
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'yasnippet)
+(setq yas-snippet-dirs
+      '("~/git/dotfiles/snippets"
+        ))
+
+(yas-global-mode 1) ;; or M-x yas-reload-all if you've started YASnippet already.
+(yas-reload-all)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; RECENT MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'recentf)
@@ -167,7 +180,9 @@
             (define-key coffee-mode-map (kbd "M-r") 'coffee-compile-buffer)
             (define-key coffee-mode-map (kbd "M-R") 'coffee-compile-region)
             (define-key coffee-mode-map (kbd "<tab>") 'coffee-indent)
-            (define-key coffee-mode-map (kbd "<backtab>") 'coffee-unindent)))
+            (define-key coffee-mode-map (kbd "<backtab>") 'coffee-unindent))
+          )
+
 
 (add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
 (add-to-list 'auto-mode-alist '("\\.cson$" . coffee-mode))
@@ -227,10 +242,15 @@
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
 (add-hook 'coffee-mode-hook 'auto-complete-mode)
 (add-to-list 'auto-mode-alist '("\\.coffeelintrc$" . json-mode))
-(add-hook 'coffee-mode-hook 'whitespace-mode)
 (add-hook 'coffee-mode-hook 'linum-mode)
 (setq whitespace-action '(auto-cleanup))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LITERATE COFFEE MODE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; https://github.com/syohex/emacs-literate-coffee-mode
+(add-to-list 'load-path "/Users/scott/git/emacs/packages")
+(require 'literate-coffee-mode)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ORG MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -328,7 +348,6 @@
                 (local-set-key "\C-cl"
                                 'js-load-file-and-go)
 ))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JSON MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -363,12 +382,16 @@
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.hbs$" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CSS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (add-to-list 'auto-mode-alist '("\\.less?\\'" . less-css-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MARKDOWN
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'auto-mode-alist '("\\.txt$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -381,17 +404,6 @@
 (setq ac-auto-start 2)
 ; case sensitivity is important when finding matches
 (setq ac-ignore-case nil)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; YA SNIPPET
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'yasnippet)
-(setq yas-snippet-dirs
-      '("~/git/dotfiles/snippets"
-        ))
-
-(yas-global-mode 1) ;; or M-x yas-reload-all if you've started YASnippet already.
-(yas-reload-all)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PARENS
