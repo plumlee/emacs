@@ -8,6 +8,7 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 
+(setq ns-use-srgb-colorspace t)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CUT/COPY/PASTE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -68,7 +69,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (visual-line-mode)
 (column-number-mode)
-(linum-mode)
+(global-linum-mode 1)
 
 (setq default-buffer-file-coding-system 'utf-8-unix)
 (define-key global-map (kbd "RET") 'newline-and-indent)
@@ -258,18 +259,17 @@
      (org-clock-persistence-insinuate)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; GIT-GUTTER
+;; GIT-GUTTER-FRINGE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'git-gutter)
-;; If you enable global minor mode
+(require 'git-gutter-fringe)
 (global-git-gutter-mode t)
 ;; bind git-gutter toggle command
-(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+(global-set-key (kbd "C-x C-g") 'git-gutter-fr:toggle)
 ;; Jump to next/previous diff
-(global-set-key (kbd "C-x p") 'git-gutter:previous-diff)
-(global-set-key (kbd "C-x n") 'git-gutter:next-diff)
+(global-set-key (kbd "C-x p") 'git-gutter-fr:previous-diff)
+(global-set-key (kbd "C-x n") 'git-gutter-fr:next-diff)
 ;; ignore all spaces
-(setq git-gutter:diff-option "-w")
+(setq git-gutter-fr:diff-option "-w")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
