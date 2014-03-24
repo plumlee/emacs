@@ -1,5 +1,9 @@
+(setq auto-save-default nil)
+
 (setq inhibit-splash-screen t
       inhibit-startup-message t)
+
+(setq visible-bell 'top-bottom)
 
 (require 'package)
 (add-to-list 'package-archives
@@ -107,8 +111,9 @@
 (defalias 'hm 'html-mode)
 (defalias 'fold 'jao-toggle-selective-display)
 (defalias 'rename 'rename-file-and-buffer)
-(defalias 'fe 'flymake-display-err-menu-for-current-line)
+;;(defalias 'fe 'flymake-display-err-menu-for-current-line)
 (defalias 'yes-or-no-p 'y-or-n-p)
+(defalias 'wc 'whitespace-cleanup)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONS
@@ -178,8 +183,8 @@
 
 (add-hook 'coffee-mode-hook
           (lambda ()
-            (define-key coffee-mode-map (kbd "M-r") 'coffee-compile-buffer)
-            (define-key coffee-mode-map (kbd "M-R") 'coffee-compile-region)
+            (define-key coffee-mode-map (kbd "M-R") 'coffee-compile-buffer)
+            (define-key coffee-mode-map (kbd "M-r") 'coffee-compile-region)
             (define-key coffee-mode-map (kbd "<tab>") 'coffee-indent)
             (define-key coffee-mode-map (kbd "<backtab>") 'coffee-unindent))
           )
@@ -187,6 +192,8 @@
 
 (add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
 (add-to-list 'auto-mode-alist '("\\.cson$" . coffee-mode))
+(setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap
+(add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
 
 ;; Use js2-mode for displaying compiled CS
 (setq coffee-js-mode 'js3-mode)
@@ -237,11 +244,12 @@
 (eval-after-load 'coffee-mode
   '(define-key coffee-mode-map (kbd "C-c f") 'coffee-compile-file))
 
-(setq flymake-coffee-coffeelint-configuration-file
-      (concat HOME ".coffeelintrc"))
-(require 'flymake-coffee)
-(add-hook 'coffee-mode-hook 'flymake-coffee-load)
+;; (setq flymake-coffee-coffeelint-configuration-file
+;;       (concat HOME ".coffeelintrc"))
+;; (require 'flymake-coffee)
+;; (add-hook 'coffee-mode-hook 'flymake-coffee-load)
 (add-hook 'coffee-mode-hook 'auto-complete-mode)
+(add-hook 'coffee-mode-hook 'whitespace-mode)
 (add-to-list 'auto-mode-alist '("\\.coffeelintrc$" . json-mode))
 (add-hook 'coffee-mode-hook 'linum-mode)
 (setq whitespace-action '(auto-cleanup))
@@ -329,7 +337,7 @@
         (setq js3-indent-tabs-mode nil)
         (setq js3-cleanup-whitespace t)
         (setq js3-mode-escape-quotes nil)
-      (flymake-mode t)
+;;      (flymake-mode t)
         (yas-minor-mode)
         (auto-complete-mode t)
         ))
@@ -454,3 +462,55 @@
   (shell-command (format "etags *.%s" (or extension "el")))
   (let ((tags-revert-without-query t))  ; don't query, revert silently
     (visit-tags-table default-directory nil)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; IDO/IMENU
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'imenu)
+(require 'ido)
+(defun ido-goto-symbol ()
+  "Will update the imenu index and then use ido to select a
+   symbol to navigate to"
+  (interactive)
+  (imenu--make-index-alist)
+  (let ((name-and-pos '())
+        (symbol-names '()))
+    (flet ((addsymbols (symbol-list)
+                       (when (listp symbol-list)
+                         (dolist (symbol symbol-list)
+                           (let ((name nil) (position nil))
+                             (cond
+                              ((and (listp symbol) (imenu--subalist-p symbol))
+                               (addsymbols symbol))
+
+                              ((listp symbol)
+                               (setq name (car symbol))
+                               (setq position (cdr symbol)))
+
+                              ((stringp symbol)
+                               (setq name symbol)
+                               (setq position (get-text-property 1 'org-imenu-marker symbol))))
+
+                             (unless (or (null position) (null name))
+                               (add-to-list 'symbol-names name)
+                               (add-to-list 'name-and-pos (cons name position))))))))
+      (addsymbols imenu--index-alist))
+    (let* ((selected-symbol (ido-completing-read "Symbol? " symbol-names))
+           (position (cdr (assoc selected-symbol name-and-pos))))
+      (goto-char position))))
+
+(global-set-key (kbd "C-t")  'ido-goto-symbol)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ABBREV MODE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq default-abbrev-mode t)
+;;(require 'textexpander-sync)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FLYCHECK
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-flycheck-mode)
+
+(provide '.emacs)
+;;; .emacs ends here

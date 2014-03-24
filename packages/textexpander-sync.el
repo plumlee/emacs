@@ -23,16 +23,16 @@
 
 ;; 1) Assuming that you have text expander setup
 ;; 2) put this file and osx-plist.el  in your lisp dir
-;; 3) add to .emacs:
+;; 3) add to .emacs: 
 ;;   (require 'textexpander-sync)
 ;; 4) sync (and resync) via: M-x textexpander-sync
-;; 5) In textexpander settings set "Expand In" to
+;; 5) In textexpander settings set "Expand In" to 
 ;;    "all applications excect" emacs
-;;
+;; 
 ;; This code requires (osx-plist), which was probably included
 ;; If not, download it here:
 ;;   otherwise: http://edward.oconnor.cx/elisp/osx-plist.el
-;;
+;; 
 
 
 ;;; Code:
@@ -43,7 +43,7 @@
   "Your text epander settings")
 
 (defun textexpander-sync ()
-  "Grab TextExpander snippets "
+  "Grab TextExpander snippets " 
   (interactive)
   (let ((plist (osx-plist-parse-file textexpander-sync-file)))
 
@@ -60,3 +60,4 @@
   )
 
 (provide 'textexpander-sync)
+
