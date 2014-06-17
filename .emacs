@@ -60,14 +60,14 @@
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq indent-tabs-mode nil)
-(setq whitespace-line-column 78)
+(setq whitespace-line-column 80)
 (setq whitespace-action '(auto-cleanup))
 (setq whitespace-style '(trailing space-before-tab
                                   indentation empty
                                   space-after-tab))
 
 (setq whitespace-style '(face empty tabs lines-tail trailing))
-;; (setq whitespace-global-modes '(js3-mode coffee-mode web-mode))
+;;(setq whitespace-global-modes '(js3-mode coffee-mode web-mode))
 (global-whitespace-mode t)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
@@ -82,8 +82,12 @@
 (setq sgml-basic-offset 4)
 (setq python-indent-offset 4)
 (setq coding-system-for-write 'utf-8-unix)
-(cua-mode 0)
-(global-set-key (kbd "C--") 'undo)
+
+(global-set-key (kbd "C--") 'undo-tree-undo)
+(global-set-key (kbd "C-z") 'undo-tree-undo)
+(global-set-key (kbd "M--") 'undo-tree-redo)
+(global-set-key (kbd "M-y") 'undo-tree-redo)
+
 (global-hl-line-mode +1)
 
 ;; another way for M-x
@@ -259,8 +263,8 @@
 ;; LITERATE COFFEE MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; https://github.com/syohex/emacs-literate-coffee-mode
-(add-to-list 'load-path "/Users/scott/git/emacs/packages")
 (require 'literate-coffee-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ORG MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -514,6 +518,45 @@
 ;; FLYCHECK
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-flycheck-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; UNDO-TREE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'undo-tree)
+(global-undo-tree-mode)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUA-MODE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(cua-mode 0)
+(global-set-key [(alt c)] 'kill-ring-save)
+(global-set-key [(alt v)] 'yank)
+(global-set-key [(alt x)] 'kill-region)
+(global-set-key [(alt s)] 'save-buffer)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PROJECTILE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(projectile-global-mode)
+(setq projectile-enable-caching t)
+;; https://github.com/lewang/flx
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; IDO
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-use-faces nil)
+(setq gc-cons-threshold 20000000)
+(setq ido-use-filename-at-point 'guess)
+(setq ido-create-new-buffer 'always)
+(setq ido-file-extensions-order '(".js" ".txt"))
+(setq ido-ignore-extensions t)
+
 
 (provide '.emacs)
 ;;; .emacs ends here
