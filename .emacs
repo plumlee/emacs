@@ -40,8 +40,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq HOME (expand-file-name "~/"))
 (setq PATH (getenv "PATH"))
-(setq make-backup-files nil)
-;;(setq backup-directory-alist '(("." . "~/backups")))
+(setq create-lockfiles nil)
+(setq make-backup-files t)
+(setq backup-directory-alist '(("." . "~/backups")))
 (setenv "NODE_NO_READLINE" "1")
 (setq temporary-file-directory "/tmp")
 (defun set-exec-path-from-shell-PATH ()
@@ -328,7 +329,6 @@
         (setq js3-curly-indent-offset 0)
         (setq js3-enter-indents-newline t)
         (setq js3-expr-indent-offset 0)
-        (setq js3-global-externs (mapcar (quote symbol-name) (quote (require define JSON process __dirname console exports))))
         (setq js3-indent-dots t)
         (setq js3-lazy-dots t)
         (setq js3-indent-on-enter-key t)
@@ -342,7 +342,15 @@
         (setq js3-indent-tabs-mode nil)
         (setq js3-cleanup-whitespace t)
         (setq js3-mode-escape-quotes nil)
-;;      (flymake-mode t)
+        (setq js3-global-externs (mapcar (quote symbol-name) (quote (require define JSON module process __dirname console exports global))))
+        ;; (setq js3-mode-show-parse-errors nil)
+        ;; (setq js3-mode-show-strict-warnings nil)
+        ;; (setq js3-strict-cond-assign-warning nil)
+        ;; (setq js3-strict-inconsistent-return-warning nil)
+        ;; (setq js3-strict-missing-semi-warning nil)
+        ;; (setq js3-strict-trailing-comma-warning nil)
+        ;; (setq js3-strict-var-hides-function-arg-warning nil)
+        ;; (setq js3-strict-var-redeclaration-warning nil)
         (yas-minor-mode)
         (auto-complete-mode t)
         ))
@@ -530,10 +538,10 @@
 ;; CUA-MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (cua-mode 0)
-(global-set-key [(alt c)] 'kill-ring-save)
-(global-set-key [(alt v)] 'yank)
-(global-set-key [(alt x)] 'kill-region)
-(global-set-key [(alt s)] 'save-buffer)
+;; (global-set-key [(alt c)] 'kill-ring-save)
+;; (global-set-key [(alt v)] 'yank)
+;; (global-set-key [(alt x)] 'kill-region)
+;; (global-set-key [(alt s)] 'save-buffer)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PROJECTILE
