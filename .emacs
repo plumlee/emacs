@@ -1,3 +1,5 @@
+;;(setq line-spacing 0.5)
+
 (setq auto-save-default nil)
 
 (setq inhibit-splash-screen t
@@ -19,28 +21,16 @@
 (setq history-length 250)
 (add-to-list 'desktop-globals-to-save 'file-name-history)
 
+;; http://ergoemacs.org/emacs/emacs_stop_cursor_enter_prompt.html
+;; don't let the cursor go into minibuffer prompt
+(setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CUT/COPY/PASTE
+;; KEYS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defun copy-line-or-region ()
-  "Copy current line, or current text selection."
-  (interactive)
-  (if (region-active-p)
-      (kill-ring-save (region-beginning) (region-end))
-    (kill-ring-save (line-beginning-position) (line-beginning-position 2)) ) )
-
-(defun cut-line-or-region ()
-  "Cut the current line, or current text selection."
-  (interactive)
-  (if (region-active-p)
-      (kill-region (region-beginning) (region-end))
-    (kill-region (line-beginning-position) (line-beginning-position 2)) ) )
-
 (global-set-key (kbd "<f2>") 'cut-line-or-region) ; cut.
 (global-set-key (kbd "<f3>") 'copy-line-or-region) ; copy.
 (global-set-key (kbd "<f4>") 'yank) ; paste.
-(global-set-key (kbd "<f5>") 'comment-region)
+(global-set-key (kbd "<f5>") 'comment-or-uncomment-region-or-line)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ENVIRONMENT
@@ -59,7 +49,38 @@
     (setenv "PATH" path-from-shell)
     (setq exec-path (split-string path-from-shell path-separator))))
 
-(set-exec-path-from-shell-PATH)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; LINE SPACING
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun toggle-line-spacing ()
+  "Toggle line spacing between no extra space to extra half line height."
+  (interactive)
+  (if (eq line-spacing nil)
+      (setq line-spacing 0.5) ; add 0.5 height between lines
+    (setq line-spacing nil)   ; no extra heigh between lines
+    )
+  (redraw-frame (selected-frame)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUT/COPY/PASTE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun copy-line-or-region ()
+  "Copy current line, or current text selection."
+  (interactive)
+  (if (region-active-p)
+      (kill-ring-save (region-beginning) (region-end))
+    (kill-ring-save (line-beginning-position) (line-beginning-position 2)) ) )
+
+(defun cut-line-or-region ()
+  "Cut the current line, or current text selection."
+  (interactive)
+  (if (region-active-p)
+      (kill-region (region-beginning) (region-end))
+    (kill-region (line-beginning-position) (line-beginning-position 2)) ) )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; WHITESPACE
@@ -70,13 +91,15 @@
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq indent-tabs-mode nil)
-(setq whitespace-line-column 80)
+(setq whitespace-line-column 76)
 (setq whitespace-action '(auto-cleanup))
 (setq whitespace-style '(trailing space-before-tab
                                   indentation empty
                                   space-after-tab))
 
 (setq whitespace-style '(face empty tabs lines-tail trailing))
+;; delete blank lines and whitespace
+(global-set-key (kbd "M-SPC") 'shrink-whitespace)
 ;; (setq whitespace-global-modes '(js3-mode coffee-mode web-mode markdown-mode))
 ;; (global-whitespace-mode t)
 
@@ -132,6 +155,7 @@
 ;;(defalias 'fe 'flymake-display-err-menu-for-current-line)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (defalias 'wc 'whitespace-cleanup)
+(defalias 'arx 'align-regexp)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FUNCTIONS
@@ -164,16 +188,26 @@
 
 (defun scratch ()
   (interactive)
-  (find-file "/Users/scott/Dropbox/scratch")
+  (find-file "/Users/e008163/Dropbox/scratch")
   (insert "\n")
   )
+
+;; http://stackoverflow.com/questions/9688748/emacs-comment-uncomment-current-line
+(defun comment-or-uncomment-region-or-line ()
+    "Comments or uncomments the region or the current line if there's no active region."
+    (interactive)
+    (let (beg end)
+        (if (region-active-p)
+            (setq beg (region-beginning) end (region-end))
+            (setq beg (line-beginning-position) end (line-end-position)))
+        (comment-or-uncomment-region beg end)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; THEMES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;(add-to-list 'load-path "/Users/scott/git/solarized-emacs/")
 ;;(add-to-list 'custom-theme-load-path "/Users/scott/git/solarized-emacs/")
-(load-theme 'solarized-dark t)
+(load-theme 'solarized-light t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; YA SNIPPET
@@ -347,6 +381,7 @@
 (require 'js3-mode)
 (add-hook 'js3-mode-hook
       (lambda ()
+        (hs-minor-mode t)
         (whitespace-mode t)
         ;; (setq js3-auto-indent-p t)
         (setq js3-consistent-level-indent-inner-bracket t)
@@ -385,8 +420,17 @@
         )
       )
 
-(add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
+;; (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; JS2-MODE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(require 'js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(setq js2-mode-hook
+  '(lambda () (progn
+    (set-variable 'indent-tabs-mode nil))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JSON MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -446,10 +490,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MARKDOWN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'auto-mode-alist '("\\.txt$" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
-(add-hook 'markdown-mode-hook
+(add-to-list 'auto-mode-alist '("\\.txt$" . gfm-mode))
+(add-to-list 'auto-mode-alist '("\\.md$" . gfm-mode))
+(add-hook 'gfm-mode-hook
           (lambda ()
+            (smartparens-mode nil)
             (whitespace-mode t)
             (setq whitespace-line-column 1000)
           )
@@ -565,7 +610,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ABBREV MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setq default-abbrev-mode t)
+;; (setq default-abbrev-mode t)
 ;;(require 'textexpander-sync)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -617,15 +662,46 @@
 (setq ido-ignore-extensions t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ACE JUMP
+;; HELM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(autoload
-  'ace-jump-mode
-  "ace-jump-mode"
-  "Emacs quick move minor mode"
-  t)
-(define-key global-map (kbd "C-c SPC") 'ace-jump-mode)
+;; (require 'ac-helm) ;; Not necessary if using ELPA package
+;; (global-set-key (kbd "C-c h") 'helm-mini)
+;; ;; (helm-mode 1)
+;; (global-set-key (kbd "C-:") 'ac-complete-with-helm)
+;; (define-key ac-complete-mode-map (kbd "C-:") 'ac-complete-with-helm)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; AVY 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'avy)
+(global-set-key (kbd "C-:") 'avy-goto-char)
+(global-set-key (kbd "C-'") 'avy-goto-char-2)
+(global-set-key (kbd "M-g f") 'avy-goto-line)
+(global-set-key (kbd "M-g w") 'avy-goto-word-1)
+(global-set-key (kbd "M-g e") 'avy-goto-word-0)
+(avy-setup-default)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; EXPAND REGION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Directory Settings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(dir-locals-set-class-variables '~/git/browserify-istanbul
+				'((nil . (
+					  (indent-tabs-mode . t)
+					  (default-tab-width . 4)
+					  (tab-stop-list . (number-sequence 4 200 4))
+					  ;; (indent-line-function . 'insert-spaces)
+					  (sgml-basic-offset . 4)
+					  (js3-indent-level . 4)
+					  (js3-indent-tabs-mode . t)
+					  )))
+)
 
 (provide '.emacs)
 ;;; .emacs ends here
@@ -637,7 +713,11 @@
  '(custom-safe-themes
    (quote
     ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
- '(js3-indent-dots t))
+ '(js3-indent-dots t)
+ '(magit-use-overlays nil)
+ '(markdown-css-path
+   "http://yui.yahooapis.com/3.18.1/build/cssbase/cssbase-min.css")
+ '(org-export-backends (quote (ascii html icalendar latex md))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -645,3 +725,94 @@
  ;; If there is more than one, they won't work right.
  )
 
+
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COMMENTING
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun uncomment-sexp (&optional n)
+  "Uncomment a sexp around point."
+  (interactive "P")
+  (let* ((initial-point (point-marker))
+         (p)
+         (end (save-excursion
+                (when (elt (syntax-ppss) 4)
+                  (re-search-backward comment-start-skip
+                                      (line-beginning-position)
+                                      t))
+                (setq p (point-marker))
+                (comment-forward (point-max))
+                (point-marker)))
+         (beg (save-excursion
+                (forward-line 0)
+                (while (= end (save-excursion
+                                (comment-forward (point-max))
+                                (point)))
+                  (forward-line -1))
+                (goto-char (line-end-position))
+                (re-search-backward comment-start-skip
+                                    (line-beginning-position)
+                                    t)
+                (while (looking-at-p comment-start-skip)
+                  (forward-char -1))
+                (point-marker))))
+    (unless (= beg end)
+      (uncomment-region beg end)
+      (goto-char p)
+      ;; Indentify the "top-level" sexp inside the comment.
+      (while (and (ignore-errors (backward-up-list) t)
+                  (>= (point) beg))
+        (skip-chars-backward (rx (syntax expression-prefix)))
+        (setq p (point-marker)))
+      ;; Re-comment everything before it. 
+      (ignore-errors
+        (comment-region beg p))
+      ;; And everything after it.
+      (goto-char p)
+      (forward-sexp (or n 1))
+      (skip-chars-forward "\r\n[:blank:]")
+      (if (< (point) end)
+          (ignore-errors
+            (comment-region (point) end))
+        ;; If this is a closing delimiter, pull it up.
+        (goto-char end)
+        (skip-chars-forward "\r\n[:blank:]")
+        (when (= 5 (car (syntax-after (point))))
+          (delete-indentation))))
+    ;; Without a prefix, it's more useful to leave point where
+    ;; it was.
+    (unless n
+      (goto-char initial-point))))
+
+(defun comment-sexp--raw ()
+  "Comment the sexp at point or ahead of point."
+  (pcase (or (bounds-of-thing-at-point 'sexp)
+             (save-excursion
+               (skip-chars-forward "\r\n[:blank:]")
+               (bounds-of-thing-at-point 'sexp)))
+    (`(,l . ,r)
+     (goto-char r)
+     (skip-chars-forward "\r\n[:blank:]")
+     (comment-region l r)
+     (skip-chars-forward "\r\n[:blank:]"))))
+
+(defun comment-or-uncomment-sexp (&optional n)
+  "Comment the sexp at point and move past it.
+If already inside (or before) a comment, uncomment instead.
+With a prefix argument N, (un)comment that many sexps."
+  (interactive "P")
+  (if (or (elt (syntax-ppss) 4)
+          (< (save-excursion
+               (skip-chars-forward "\r\n[:blank:]")
+               (point))
+             (save-excursion
+               (comment-forward 1)
+               (point))))
+      (uncomment-sexp n)
+    (dotimes (_ (or n 1))
+      (comment-sexp--raw))))
+
+(define-key emacs-lisp-mode-map (kbd "C-M-;")
+  #'comment-or-uncomment-sexp)
+(eval-after-load 'js3-mode
+  '(define-key js3-mode-map (kbd "C-M-;")
+     #'comment-or-uncomment-sexp))
