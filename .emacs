@@ -8,12 +8,54 @@
 (setq visible-bell 'top-bottom)
 (modify-all-frames-parameters (list (cons 'cursor-type 'bar)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PACKAGES
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'cl)
 (require 'package)
+;;(require 'melpa)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
-(when (< emacs-major-version 24)
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
+
+
+(setq url-http-attempt-keepalives nil)
+
+(defvar prelude-packages
+  '(anzu anzu async auto-complete popup auto-complete avy avy buffer-move buffer-move coffee-mode coffee-mode dash expand-region expand-region f dash s f flx flx flx-ido flx flx-ido flycheck seq let-alist pkg-info epl dash flycheck seq seq git-commit with-editor dash async dash git-gutter git-gutter git-timemachine git-timemachine groovy-mode groovy-mode helm helm-core async async helm-core async js-comint nvm dash-functional dash f dash s dash s js-comint nvm dash-functional dash f dash s dash s nvm dash-functional dash dash-functional js2-mode js2-mode js3-mode js3-mode json-mode json-snatcher json-reformat json-mode json-reformat json-reformat magit magit-popup dash async git-commit with-editor dash async dash with-editor dash async dash async git-commit with-editor dash async dash git-commit magit-popup dash async magit-popup markdown-mode markdown-mode popup popup projectile pkg-info epl dash projectile s s shrink-whitespace shrink-whitespace smartparens dash smartparens solarized-theme dash solarized-theme visual-regexp visual-regexp web-mode web-mode with-editor dash async with-editor async async dash dash yasnippet yasnippet ac-helm popup auto-complete popup helm helm-core async async anzu auto-complete popup autopair avy buffer-move expand-region f dash s flx-ido flx flycheck let-alist pkg-info epl dash git-gutter-fringe fringe-helper git-gutter git-timemachine gitconfig-mode gradle-mode s groovy-mode handlebars-mode helm helm-core async async helm-core async js-comint js-doc js2-mode js3-mode json-mode json-snatcher json-reformat json-reformat json-snatcher less-css-mode let-alist literate-coffee-mode coffee-mode magit magit-popup dash async git-commit with-editor dash async dash with-editor dash async dash async magit-popup dash async markdown-mode mediawiki popup projectile pkg-info epl dash s shrink-whitespace smartparens dash solarized-theme dash undo-tree visual-regexp-steroids visual-regexp web-mode whitespace-cleanup-mode with-editor dash async yasnippet)
+  "A list of packages to ensure are installed at launch.")
+
+(defun prelude-packages-installed-p ()
+  "Check if all packages in `prelude-packages' are installed."
+  (every #'package-installed-p prelude-packages))
+
+(defun prelude-require-package (package)
+  "Install PACKAGE unless already installed."
+  (unless (memq package prelude-packages)
+    (add-to-list 'prelude-packages package))
+  (unless (package-installed-p package)
+    (package-install package)))
+
+(defun prelude-require-packages (packages)
+  "Ensure PACKAGES are installed.
+Missing packages are installed automatically."
+  (mapc #'prelude-require-package packages))
+
+(define-obsolete-function-alias 'prelude-ensure-module-deps 'prelude-require-packages)
+
+(defun prelude-install-packages ()
+  "Install all packages listed in `prelude-packages'."
+  (unless (prelude-packages-installed-p)
+    ;; check for new packages (package versions)
+    (message "%s" "Emacs Prelude is now refreshing its package database...")
+    (package-refresh-contents)
+    (message "%s" " done.")
+    ;; install the missing packages
+    (prelude-require-packages prelude-packages)))
+
+;; run package installation
+(prelude-install-packages)
+
 
 (setq ns-use-srgb-colorspace t)
 
