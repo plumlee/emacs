@@ -1,4 +1,4 @@
-;;(setq line-spacing 0.5)
+;; (setq line-spacing 0.5)
 
 (setq auto-save-default nil)
 
@@ -22,7 +22,65 @@
 (setq url-http-attempt-keepalives nil)
 
 (defvar prelude-packages
-  '(anzu anzu async auto-complete popup auto-complete avy avy buffer-move buffer-move coffee-mode coffee-mode dash expand-region expand-region f dash s f flx flx flx-ido flx flx-ido flycheck seq let-alist pkg-info epl dash flycheck seq seq git-commit with-editor dash async dash git-gutter git-gutter git-timemachine git-timemachine groovy-mode groovy-mode helm helm-core async async helm-core async js-comint nvm dash-functional dash f dash s dash s js-comint nvm dash-functional dash f dash s dash s nvm dash-functional dash dash-functional js2-mode js2-mode js3-mode js3-mode json-mode json-snatcher json-reformat json-mode json-reformat json-reformat magit magit-popup dash async git-commit with-editor dash async dash with-editor dash async dash async git-commit with-editor dash async dash git-commit magit-popup dash async magit-popup markdown-mode markdown-mode popup popup projectile pkg-info epl dash projectile s s shrink-whitespace shrink-whitespace smartparens dash smartparens solarized-theme dash solarized-theme visual-regexp visual-regexp web-mode web-mode with-editor dash async with-editor async async dash dash yasnippet yasnippet ac-helm popup auto-complete popup helm helm-core async async anzu auto-complete popup autopair avy buffer-move expand-region f dash s flx-ido flx flycheck let-alist pkg-info epl dash git-gutter-fringe fringe-helper git-gutter git-timemachine gitconfig-mode gradle-mode s groovy-mode handlebars-mode helm helm-core async async helm-core async js-comint js-doc js2-mode js3-mode json-mode json-snatcher json-reformat json-reformat json-snatcher less-css-mode let-alist literate-coffee-mode coffee-mode magit magit-popup dash async git-commit with-editor dash async dash with-editor dash async dash async magit-popup dash async markdown-mode mediawiki popup projectile pkg-info epl dash s shrink-whitespace smartparens dash solarized-theme dash undo-tree visual-regexp-steroids visual-regexp web-mode whitespace-cleanup-mode with-editor dash async yasnippet)
+  '(
+    ac-helm
+    anzu
+    async
+    auto-complete
+    autopair
+    avy
+    buffer-move
+    coffee-mode
+    dash
+    dash-at-point
+    dash-functional
+    epl
+    expand-region
+    f
+    flx
+    flx-ido
+    flycheck
+    fringe-helper
+    git-commit
+    git-gutter
+    git-gutter-fringe
+    git-timemachine
+    gitconfig-mode
+    gradle-mode
+    handlebars-mode
+    helm
+    helm-core
+    js-comint
+    js-doc
+    js2-mode
+    js3-mode
+    json-mode
+    json-reformat
+    json-snatcher
+    less-css-mode
+    let-alist
+    literate-coffee-mode
+    magit
+    magit-popup
+   markdown-mode
+    mediawiki
+    nvm
+    pkg-info
+    popup
+    projectile
+    s
+    seq
+    shrink-whitespace
+    smartparens
+    solarized-theme
+    undo-tree
+    visual-regexp
+    visual-regexp-steroids
+    web-mode
+    whitespace-cleanup-mode
+    with-editor
+   yasnippet
+    )
   "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
@@ -55,7 +113,6 @@ Missing packages are installed automatically."
 
 ;; run package installation
 (prelude-install-packages)
-
 
 (setq ns-use-srgb-colorspace t)
 
@@ -277,88 +334,88 @@ Missing packages are installed automatically."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; https://github.com/bodil/emacs.d/blob/master/bodil-js.el
 
-(require 'coffee-mode)
+;; (require 'coffee-mode)
 
-(add-hook 'coffee-mode-hook
-          (lambda ()
-            (whitespace-mode t)
-            (define-key coffee-mode-map (kbd "M-R") 'coffee-compile-buffer)
-            (define-key coffee-mode-map (kbd "M-r") 'coffee-compile-region)
-            (define-key coffee-mode-map (kbd "<tab>") 'coffee-indent)
-            (define-key coffee-mode-map (kbd "<backtab>") 'coffee-unindent))
-          )
+;; (add-hook 'coffee-mode-hook
+;;           (lambda ()
+;;             (whitespace-mode t)
+;;             (define-key coffee-mode-map (kbd "M-R") 'coffee-compile-buffer)
+;;             (define-key coffee-mode-map (kbd "M-r") 'coffee-compile-region)
+;;             (define-key coffee-mode-map (kbd "<tab>") 'coffee-indent)
+;;             (define-key coffee-mode-map (kbd "<backtab>") 'coffee-unindent))
+;;           )
 
 
-(add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
-(add-to-list 'auto-mode-alist '("\\.cson$" . coffee-mode))
-(setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap
-(add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
+;; (add-to-list 'auto-mode-alist '("\\.coffee$" . coffee-mode))
+;; (add-to-list 'auto-mode-alist '("\\.cson$" . coffee-mode))
+;; (setq coffee-args-compile '("-c" "-m")) ;; generating sourcemap
+;; (add-hook 'coffee-after-compile-hook 'sourcemap-goto-corresponding-point)
 
-;; Use js2-mode for displaying compiled CS
-(setq coffee-js-mode 'js3-mode)
+;; ;; Use js2-mode for displaying compiled CS
+;; (setq coffee-js-mode 'js3-mode)
 
-;; Patch coffee-mode so coffee-compile-region pops up a new
-;; non-focused window instead of replacing the current buffer.
-(eval-after-load "coffee-mode"
-  '(defun coffee-compile-region (start end)
-     "Compiles a region and displays the JS in another buffer."
-     (interactive "r")
-     (let ((buffer (get-buffer coffee-compiled-buffer-name)))
-       (when buffer (kill-buffer buffer)))
-     (call-process-region start end coffee-command nil
-                          (get-buffer-create coffee-compiled-buffer-name) nil "-s" "-p" "--bare")
-     (let ((buffer (get-buffer coffee-compiled-buffer-name)))
-       (with-current-buffer buffer
-         (funcall coffee-js-mode)
-         (goto-char (point-min)))
-       (display-buffer buffer))))
+;; ;; Patch coffee-mode so coffee-compile-region pops up a new
+;; ;; non-focused window instead of replacing the current buffer.
+;; (eval-after-load "coffee-mode"
+;;   '(defun coffee-compile-region (start end)
+;;      "Compiles a region and displays the JS in another buffer."
+;;      (interactive "r")
+;;      (let ((buffer (get-buffer coffee-compiled-buffer-name)))
+;;        (when buffer (kill-buffer buffer)))
+;;      (call-process-region start end coffee-command nil
+;;                           (get-buffer-create coffee-compiled-buffer-name) nil "-s" "-p" "--bare")
+;;      (let ((buffer (get-buffer coffee-compiled-buffer-name)))
+;;        (with-current-buffer buffer
+;;          (funcall coffee-js-mode)
+;;          (goto-char (point-min)))
+;;        (display-buffer buffer))))
 
-;; Handle backtabs and indenting regions
-(defun coffee-indent-block ()
-  (shift-region coffee-tab-width)
-  (setq deactivate-mark nil))
+;; ;; Handle backtabs and indenting regions
+;; (defun coffee-indent-block ()
+;;   (shift-region coffee-tab-width)
+;;   (setq deactivate-mark nil))
 
-(defun coffee-unindent-block ()
-  (shift-region (- coffee-tab-width))
-  (setq deactivate-mark nl))
+;; (defun coffee-unindent-block ()
+;;   (shift-region (- coffee-tab-width))
+;;   (setq deactivate-mark nl))
 
-(defun coffee-indent ()
-  (interactive)
-  (if (and (boundp 'ac-trigger-command-p) (ac-trigger-command-p last-command))
-      (auto-complete)
-    (if mark-active
-        (coffee-indent-block)
-      (indent-for-tab-command))))
+;; (defun coffee-indent ()
+;;   (interactive)
+;;   (if (and (boundp 'ac-trigger-command-p) (ac-trigger-command-p last-command))
+;;       (auto-complete)
+;;     (if mark-active
+;;         (coffee-indent-block)
+;;       (indent-for-tab-command))))
 
-(defun coffee-unindent ()
-  (interactive)
-  (if mark-active
-      (coffee-unindent-block)
-    (progn
-      (indent-line-to (- (current-indentation) coffee-tab-width)))))
+;; (defun coffee-unindent ()
+;;   (interactive)
+;;   (if mark-active
+;;       (coffee-unindent-block)
+;;     (progn
+;;       (indent-line-to (- (current-indentation) coffee-tab-width)))))
 
-(setq coffee-tab-width 4)
-(eval-after-load 'coffee-mode
-  '(define-key coffee-mode-map (kbd "M-r") 'coffee-compile-buffer))
-(eval-after-load 'coffee-mode
-  '(define-key coffee-mode-map (kbd "C-c f") 'coffee-compile-file))
+;; (setq coffee-tab-width 4)
+;; (eval-after-load 'coffee-mode
+;;   '(define-key coffee-mode-map (kbd "M-r") 'coffee-compile-buffer))
+;; (eval-after-load 'coffee-mode
+;;   '(define-key coffee-mode-map (kbd "C-c f") 'coffee-compile-file))
 
-;; (setq flymake-coffee-coffeelint-configuration-file
-;;       (concat HOME ".coffeelintrc"))
-;; (require 'flymake-coffee)
-;; (add-hook 'coffee-mode-hook 'flymake-coffee-load)
-(add-hook 'coffee-mode-hook 'auto-complete-mode)
-(add-hook 'coffee-mode-hook 'whitespace-mode)
-(add-to-list 'auto-mode-alist '("\\.coffeelintrc$" . json-mode))
-(add-hook 'coffee-mode-hook 'linum-mode)
-(setq whitespace-action '(auto-cleanup))
+;; ;; (setq flymake-coffee-coffeelint-configuration-file
+;; ;;       (concat HOME ".coffeelintrc"))
+;; ;; (require 'flymake-coffee)
+;; ;; (add-hook 'coffee-mode-hook 'flymake-coffee-load)
+;; (add-hook 'coffee-mode-hook 'auto-complete-mode)
+;; (add-hook 'coffee-mode-hook 'whitespace-mode)
+;; (add-to-list 'auto-mode-alist '("\\.coffeelintrc$" . json-mode))
+;; (add-hook 'coffee-mode-hook 'linum-mode)
+;; (setq whitespace-action '(auto-cleanup))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LITERATE COFFEE MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/syohex/emacs-literate-coffee-mode
-(require 'literate-coffee-mode)
+;; (require 'literate-coffee-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ORG MODE
@@ -452,7 +509,7 @@ Missing packages are installed automatically."
         ;; (setq js3-strict-trailing-comma-warning nil)
         ;; (setq js3-strict-var-hides-function-arg-warning nil)
         ;; (setq js3-strict-var-redeclaration-warning nil)
-        (yas-minor-mode)
+        ;; (yas-minor-mode)
         (auto-complete-mode t)
         ;; (local-set-key "\C-x\C-e" 'js-send-last-sexp)
         ;; (local-set-key "\C-\M-x" js-send-last-sexp-and-go)
@@ -493,7 +550,7 @@ Missing packages are installed automatically."
 (autoload 'dash-at-point "dash-at-point"
           "Search the word at point with Dash." t nil)
 (global-set-key "\C-cd" 'dash-at-point)
-;;(add-to-list 'dash-at-point-mode-alist '(js3-mode . "backbone"))
+;; (add-to-list 'dash-at-point-mode-alist '(js3-mode . "backbone"))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -532,7 +589,7 @@ Missing packages are installed automatically."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MARKDOWN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-to-list 'auto-mode-alist '("\\.txt$" . gfm-mode))
+;;(add-to-list 'auto-mode-alist '("\\.txt$" . gfm-mode))
 (add-to-list 'auto-mode-alist '("\\.md$" . gfm-mode))
 (add-hook 'gfm-mode-hook
           (lambda ()
@@ -649,6 +706,7 @@ Missing packages are installed automatically."
 
 ;; display any item that contains the chars you typed
 (setq ido-enable-flex-matching t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ABBREV MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -683,8 +741,8 @@ Missing packages are installed automatically."
 ;; PROJECTILE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(projectile-global-mode)
-(setq projectile-enable-caching t)
+;; (projectile-global-mode)
+;; (setq projectile-enable-caching t)
 ;; https://github.com/lewang/flx
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -706,11 +764,11 @@ Missing packages are installed automatically."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; HELM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (require 'ac-helm) ;; Not necessary if using ELPA package
-;; (global-set-key (kbd "C-c h") 'helm-mini)
-;; ;; (helm-mode 1)
-;; (global-set-key (kbd "C-:") 'ac-complete-with-helm)
-;; (define-key ac-complete-mode-map (kbd "C-:") 'ac-complete-with-helm)
+(require 'ac-helm) ;; Not necessary if using ELPA package
+(global-set-key (kbd "C-c h") 'helm-mini)
+;; (helm-mode 1)
+(global-set-key (kbd "C-:") 'ac-complete-with-helm)
+(define-key ac-complete-mode-map (kbd "C-:") 'ac-complete-with-helm)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AVY 
@@ -744,28 +802,6 @@ Missing packages are installed automatically."
 					  (js3-indent-tabs-mode . t)
 					  )))
 )
-
-(provide '.emacs)
-;;; .emacs ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
- '(js3-indent-dots t)
- '(magit-use-overlays nil)
- '(markdown-css-path
-   "http://yui.yahooapis.com/3.18.1/build/cssbase/cssbase-min.css")
- '(org-export-backends (quote (ascii html icalendar latex md))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -858,3 +894,21 @@ With a prefix argument N, (un)comment that many sexps."
 (eval-after-load 'js3-mode
   '(define-key js3-mode-map (kbd "C-M-;")
      #'comment-or-uncomment-sexp))
+
+
+(provide '.emacs)
+;;; .emacs ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js3-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
