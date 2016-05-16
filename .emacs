@@ -53,7 +53,6 @@
     js-comint
     js-doc
     js2-mode
-    js3-mode
     json-mode
     json-reformat
     json-snatcher
@@ -62,7 +61,7 @@
     literate-coffee-mode
     magit
     magit-popup
-   markdown-mode
+    markdown-mode
     mediawiki
     nvm
     pkg-info
@@ -189,18 +188,17 @@ Missing packages are installed automatically."
 (setq-default default-tab-width 4)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
-(setq indent-tabs-mode nil)
-(setq whitespace-line-column 76)
-(setq whitespace-action '(auto-cleanup))
-(setq whitespace-style '(trailing space-before-tab
+(setq-default whitespace-line-column 76)
+(setq-default whitespace-action '(auto-cleanup))
+(setq-default whitespace-style '(trailing space-before-tab
                                   indentation empty
                                   space-after-tab))
 
 (setq whitespace-style '(face empty tabs lines-tail trailing))
 ;; delete blank lines and whitespace
 (global-set-key (kbd "M-SPC") 'shrink-whitespace)
-;; (setq whitespace-global-modes '(js3-mode coffee-mode web-mode markdown-mode))
-;; (global-whitespace-mode t)
+(setq whitespace-global-modes '(js2-mode coffee-mode web-mode markdown-mode))
+(global-whitespace-mode t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
@@ -477,47 +475,47 @@ Missing packages are installed automatically."
 ;; JS3-MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(require 'js3-mode)
-(add-hook 'js3-mode-hook
-      (lambda ()
-        (hs-minor-mode t)
-        (whitespace-mode t)
-        ;; (setq js3-auto-indent-p t)
-        (setq js3-consistent-level-indent-inner-bracket t)
-        ;; (setq js3-curly-indent-offset 0)
-        ;; (setq js3-enter-indents-newline t)
-        ;; (setq js3-expr-indent-offset 0)
-        ;; (setq js3-indent-dots t)
-        ;; (setq js3-lazy-dots t)
-        ;; (setq js3-indent-on-enter-key t)
-        ;; (setq js3-max-columns 80)
-        ;; (setq js3-mirror-mode nil)
-        ;; (setq js3-mode-escape-quotes nil)
-        ;; (setq js3-paren-indent-offset 0)
-        ;; (setq js3-square-indent-offset 0)
-        (setq sgml-basic-offset 4)
-        (setq js3-indent-level 4)
-        (setq js3-indent-tabs-mode nil)
-        (setq js3-cleanup-whitespace t)
-        ;; (setq js3-mode-escape-quotes nil)
-        (setq js3-global-externs (mapcar (quote symbol-name) (quote (require define JSON module process __dirname console exports global $ descibe beforeEach afterEach it expect))))
-        ;; (setq js3-mode-show-parse-errors nil)
-        ;; (setq js3-mode-show-strict-warnings nil)
-        ;; (setq js3-strict-cond-assign-warning nil)
-        ;; (setq js3-strict-inconsistent-return-warning nil)
-        ;; (setq js3-strict-missing-semi-warning nil)
-        ;; (setq js3-strict-trailing-comma-warning nil)
-        ;; (setq js3-strict-var-hides-function-arg-warning nil)
-        ;; (setq js3-strict-var-redeclaration-warning nil)
-        ;; (yas-minor-mode)
-        (auto-complete-mode t)
-        ;; (local-set-key "\C-x\C-e" 'js-send-last-sexp)
-        ;; (local-set-key "\C-\M-x" js-send-last-sexp-and-go)
-        ;; (local-set-key "\C-cb" js-send-buffer)
-        ;; (local-set-key "\C-c\C-b" js-send-buffer-and-go)
-        ;; (local-set-key "\C-cl" js-load-file-and-go)
-        )
-      )
+;; (require 'js3-mode)
+;; (add-hook 'js3-mode-hook
+;;       (lambda ()
+;;         (hs-minor-mode t)
+;;         (whitespace-mode t)
+;;         (setq js3-auto-indent-p t)
+;;         (setq js3-consistent-level-indent-inner-bracket t)
+;;         (setq js3-curly-indent-offset 0)
+;;         (setq js3-enter-indents-newline t)
+;;         (setq js3-expr-indent-offset 0)
+;;         (setq js3-indent-dots t)
+;;         (setq js3-lazy-dots t)
+;;         (setq js3-indent-on-enter-key t)
+;;         (setq js3-max-columns 80)
+;;         (setq js3-mirror-mode nil)
+;;         (setq js3-mode-escape-quotes nil)
+;;         (setq js3-paren-indent-offset 0)
+;;         (setq js3-square-indent-offset 0)
+;;         (setq sgml-basic-offset 4)
+;;         (setq js3-indent-level 4)
+;;         (setq js3-indent-tabs-mode nil)
+;;         (setq js3-cleanup-whitespace t)
+;;         (setq js3-mode-escape-quotes nil)
+;;         (setq js3-global-externs (mapcar (quote symbol-name) (quote (require define JSON module process __dirname console exports global $ descibe beforeEach afterEach it expect))))
+;;         (setq js3-mode-show-parse-errors nil)
+;;         (setq js3-mode-show-strict-warnings nil)
+;;         (setq js3-strict-cond-assign-warning nil)
+;;         (setq js3-strict-inconsistent-return-warning nil)
+;;         (setq js3-strict-missing-semi-warning nil)
+;;         (setq js3-strict-trailing-comma-warning nil)
+;;         (setq js3-strict-var-hides-function-arg-warning nil)
+;;         (setq js3-strict-var-redeclaration-warning nil)
+;;         (yas-minor-mode)
+;;         (auto-complete-mode t)
+;;         (local-set-key "\C-x\C-e" 'js-send-last-sexp)
+;;         (local-set-key "\C-\M-x" js-send-last-sexp-and-go)
+;;         (local-set-key "\C-cb" js-send-buffer)
+;;         (local-set-key "\C-c\C-b" js-send-buffer-and-go)
+;;         (local-set-key "\C-cl" js-load-file-and-go)
+;;         )
+;;       )
 
 ;; (add-to-list 'auto-mode-alist '("\\.js$" . js3-mode))
 
@@ -527,9 +525,7 @@ Missing packages are installed automatically."
 
 (require 'js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(setq js2-mode-hook
-  '(lambda () (progn
-    (set-variable 'indent-tabs-mode nil))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JSON MODE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -798,11 +794,16 @@ Missing packages are installed automatically."
 					  (tab-stop-list . (number-sequence 4 200 4))
 					  ;; (indent-line-function . 'insert-spaces)
 					  (sgml-basic-offset . 4)
-					  (js3-indent-level . 4)
-					  (js3-indent-tabs-mode . t)
 					  )))
-)
+                )
 
+(dir-locals-set-class-variables 'openamp-viewer
+                                '((nil . (
+                                          (js2-basic-offset . 2)
+                                          )))
+                                )
+(dir-locals-set-directory-class
+ "~/git/openamp-viewer/" 'openamp-viewer)
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COMMENTING
@@ -891,8 +892,8 @@ With a prefix argument N, (un)comment that many sexps."
 
 (define-key emacs-lisp-mode-map (kbd "C-M-;")
   #'comment-or-uncomment-sexp)
-(eval-after-load 'js3-mode
-  '(define-key js3-mode-map (kbd "C-M-;")
+(eval-after-load 'js2-mode
+  '(define-key js2-mode-map (kbd "C-M-;")
      #'comment-or-uncomment-sexp))
 
 
@@ -905,7 +906,8 @@ With a prefix argument N, (un)comment that many sexps."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js3-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm))))
+    (dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm)))
+ '(safe-local-variable-values (quote ((js2-basic-offset . 2)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
