@@ -190,11 +190,18 @@ Missing packages are installed automatically."
 (setq-default indent-tabs-mode nil)
 (setq-default whitespace-line-column 76)
 (setq-default whitespace-action '(auto-cleanup))
-(setq-default whitespace-style '(trailing space-before-tab
-                                  indentation empty
-                                  space-after-tab))
+(setq-default whitespace-style '(
+                                 empty
+                                 face
+                                 indentation empty
+                                 lines-tail
+                                 space-after-tab
+                                 space-before-tab
+                                 tabs
+                                 trailing
+                                 )
+              )
 
-(setq whitespace-style '(face empty tabs lines-tail trailing))
 ;; delete blank lines and whitespace
 (global-set-key (kbd "M-SPC") 'shrink-whitespace)
 (setq whitespace-global-modes '(js2-mode coffee-mode web-mode markdown-mode))
@@ -525,6 +532,7 @@ Missing packages are installed automatically."
 
 (require 'js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx$" . js2-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; JSON MODE
@@ -714,7 +722,13 @@ Missing packages are installed automatically."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (global-flycheck-mode)
+(setq-default flycheck-disabled-checkers
+              (append flycheck-disabled-checkers
+                      '(javascript-jshint)))
+(flycheck-add-mode 'javascript-eslint 'web-mode)
 
+;; customize flycheck temp file prefix
+(setq-default flycheck-temp-prefix ".flycheck")
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; UNDO-TREE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -804,6 +818,30 @@ Missing packages are installed automatically."
                                 )
 (dir-locals-set-directory-class
  "~/git/openamp-viewer/" 'openamp-viewer)
+
+(dir-locals-set-class-variables 'sf
+                                '((nil . (
+                                          (whitespace-style . (
+                                                               empty
+                                                               face
+                                                               indentation empty
+                                                               lines-tail
+                                                               space-after-tab
+                                                               space-before-tab
+                                                               trailing
+                                                               ))
+                                          (indent-tabs-mode . t)
+                                          (tab-width . 4)
+                                          (tab-stop-list . (number-sequence 4 200 4))
+                                          ;; (indent-line-function . 'insert-spaces)
+                                          (sgml-basic-offset . 4)
+                                          )))
+                                )
+
+(dir-locals-set-directory-class
+ "~/git/openamp-viewer/" 'openamp-viewer)
+(dir-locals-set-directory-class
+ "~/git/sf/" 'sf)
 
  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COMMENTING
@@ -907,7 +945,26 @@ With a prefix argument N, (un)comment that many sexps."
  '(package-selected-packages
    (quote
     (dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm)))
- '(safe-local-variable-values (quote ((js2-basic-offset . 2)))))
+ '(safe-local-variable-values
+   (quote
+    ((whitespace-style empty face indentation empty lines-tail space-after-tab space-before-tab trailing)
+     (setq-local whitespace-style nil)
+     (set
+      (make-local-variable
+       (quote whitespace-style))
+      nil)
+     (whitespace-style face tabs empty lines-tail trailing)
+     (whitespace-style face empty lines-tail trailing)
+     (whitespace-style quote
+                       (face empty lines-tail trailing))
+     (whitespace-style quote
+                       (face empty tabs lines-tail trailing))
+     (whitespace-style
+      (quote
+       (face empty lines-tail trailing)))
+     (sgml-basic-offset . 4)
+     (default-tab-width . 4)
+     (js2-basic-offset . 2)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
