@@ -125,9 +125,9 @@ Missing packages are installed automatically."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEYS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key (kbd "<f2>") 'cut-line-or-region) ; cut.
-(global-set-key (kbd "<f3>") 'copy-line-or-region) ; copy.
-(global-set-key (kbd "<f4>") 'yank) ; paste.
+(global-set-key (kbd "<f2>") 'cut-line-or-region)
+(global-set-key (kbd "<f3>") 'copy-line-or-region)
+(global-set-key (kbd "<f4>") 'yank)
 (global-set-key (kbd "<f5>") 'comment-or-uncomment-region-or-line)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -135,20 +135,24 @@ Missing packages are installed automatically."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq HOME (expand-file-name "~/"))
-(setq PATH (getenv "PATH"))
+;; (setq PATH (getenv "PATH"))
 (setq create-lockfiles nil)
 (setq make-backup-files t)
 (setq backup-directory-alist '(("." . "~/backups")))
 (setenv "NODE_NO_READLINE" "1")
 (setq temporary-file-directory "/tmp")
-(defun set-exec-path-from-shell-PATH ()
-  (interactive)
-  (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
 
+;; (defun set-exec-path-from-shell-PATH ()
+;;   (interactive)
+;;   (let ((path-from-shell (replace-regexp-in-string "[ \t\n]*$" "" (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+;;     (setenv "PATH" path-from-shell)
+;;     (setq exec-path (split-string path-from-shell path-separator))))
 
-
+;; https://github.com/purcell/exec-path-from-shell
+;; only need exec-path-from-shell on OSX
+;; this hopefully sets up path and other vars better
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LINE SPACING
@@ -205,7 +209,7 @@ Missing packages are installed automatically."
 ;; delete blank lines and whitespace
 (global-set-key (kbd "M-SPC") 'shrink-whitespace)
 (setq whitespace-global-modes '(js2-mode coffee-mode web-mode markdown-mode))
-(global-whitespace-mode t)
+;;(global-whitespace-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MODES
@@ -541,11 +545,6 @@ Missing packages are installed automatically."
 (require 'json-mode)
 (add-to-list 'auto-mode-alist '("\\.jshintrc$" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.json$" . json-mode))
-(add-hook 'json-mode-hook
-      (lambda ()
-        (whitespace-mode t)
-        )
-      )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DASH
@@ -601,7 +600,9 @@ Missing packages are installed automatically."
             (whitespace-mode t)
             (setq whitespace-line-column 1000)
           )
-)
+          )
+;; http://jblevins.org/log/marked-2-command
+(setq markdown-open-command "/usr/local/bin/mark")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; AUTOCOMPLETE
@@ -726,9 +727,30 @@ Missing packages are installed automatically."
               (append flycheck-disabled-checkers
                       '(javascript-jshint)))
 (flycheck-add-mode 'javascript-eslint 'web-mode)
+(flycheck-add-mode 'javascript-eslint 'js2-mode)
+(flycheck-add-mode 'javascript-eslint 'js-mode)
 
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
+
+(defadvice web-mode-highlight-part (around tweak-jsx activate)
+  (if (equal web-mode-content-type "jsx")
+    (let ((web-mode-enable-part-face nil))
+      ad-do-it)
+    ad-do-it))
+
+;; https://emacs.stackexchange.com/questions/21205/flycheck-with-file-relative-eslint-executable/21207#21207
+(defun my/use-eslint-from-node-modules ()
+  (let* ((root (locate-dominating-file
+                (or (buffer-file-name) default-directory)
+                "node_modules"))
+         (eslint (and root
+                      (expand-file-name "node_modules/eslint/bin/eslint.js"
+                                        root))))
+    (when (and eslint (file-executable-p eslint))
+      (setq-local flycheck-javascript-eslint-executable eslint))))
+
+(add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; UNDO-TREE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -944,7 +966,7 @@ With a prefix argument N, (un)comment that many sexps."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm)))
+    (exec-path-from-shell dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm)))
  '(safe-local-variable-values
    (quote
     ((whitespace-style empty face indentation empty lines-tail space-after-tab space-before-tab trailing)
