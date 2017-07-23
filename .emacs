@@ -296,7 +296,7 @@ Missing packages are installed automatically."
 
 (defun scratch ()
   (interactive)
-  (find-file "/Users/e008163/Dropbox/scratch")
+  (find-file "/Users/splumlee/Google Drive/scratch.txt")
   (insert "\n")
   )
 
@@ -597,7 +597,7 @@ Missing packages are installed automatically."
 (add-hook 'gfm-mode-hook
           (lambda ()
             (smartparens-mode nil)
-            (whitespace-mode t)
+            (whitespace-mode nil)
             (setq whitespace-line-column 1000)
           )
           )
@@ -966,7 +966,7 @@ With a prefix argument N, (un)comment that many sexps."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (exec-path-from-shell dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm)))
+    (crux exec-path-from-shell dash-at-point yasnippet whitespace-cleanup-mode web-mode visual-regexp-steroids undo-tree solarized-theme smartparens shrink-whitespace projectile mediawiki markdown-mode magit literate-coffee-mode less-css-mode json-mode js2-mode js-doc js-comint handlebars-mode groovy-mode gradle-mode gitconfig-mode git-timemachine git-gutter-fringe flycheck flx-ido expand-region buffer-move avy autopair anzu ac-helm)))
  '(safe-local-variable-values
    (quote
     ((whitespace-style empty face indentation empty lines-tail space-after-tab space-before-tab trailing)
